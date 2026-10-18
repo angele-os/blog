@@ -1,0 +1,28 @@
+# Exceptions de scripts/verifier-fuites.sh
+#
+# Le script signale toute adresse IPv4, URL de webhook, clé privée ou jeton
+# trouvé dans content/ et static/. Ce fichier liste ce qui est AUTORISÉ.
+# Chaque exception doit avoir une raison écrite : on doit pouvoir la relire
+# dans six mois et comprendre pourquoi elle est sans danger.
+#
+# Format : une exception par ligne, « type  valeur  # raison »
+#   ip     <adresse> ou <adresse>/<préfixe>  : adresses ou plage CIDR ignorées
+#   texte  <texte>                           : toute détection CONTENANT ce texte
+#                                              est ignorée (pas de « # » dedans)
+# Tout ce qui suit un « # » est un commentaire.
+#
+# Conseil pour les write-ups (TryHackMe, Hack The Box…) : n'écris pas l'IP
+# réelle de la machine cible, mais MACHINE_IP ou une IP de documentation
+# (192.0.2.10, 198.51.100.7…). Aucune exception n'est alors nécessaire.
+
+# --- Plages réservées à la documentation (RFC 5737) -------------------------
+# Elles n'appartiennent à personne et ne seront jamais attribuées :
+# on peut les utiliser librement dans des exemples.
+ip  192.0.2.0/24      # TEST-NET-1
+ip  198.51.100.0/24   # TEST-NET-2
+ip  203.0.113.0/24    # TEST-NET-3
+
+# --- Adresses spéciales, identiques sur toutes les machines -----------------
+ip  127.0.0.0/8       # boucle locale (localhost, 127.0.0.1) : la machine elle-même
+ip  0.0.0.0/8         # « toutes les interfaces » (0.0.0.0) et masques inverses Cisco (0.0.0.255)
+ip  255.0.0.0/8       # masques de sous-réseau (255.255.255.0…) et diffusion (255.255.255.255)
