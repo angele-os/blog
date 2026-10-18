@@ -1,0 +1,17 @@
+# --- Fichiers générés par Hugo (recréés à chaque construction) ---
+# Le site final : c'est GitHub Actions qui le construira, pas ton PC
+/public/
+# Cache des images et du CSS traités par Hugo
+/resources/_gen/
+# Verrou posé par Hugo pendant qu'il construit
+.hugo_build.lock
+# Statistiques internes générées par Hugo
+hugo_stats.json
+
+# --- Brouillons : jamais publiés tant qu'ils ne sont pas relus ---
+brouillons/
+
+# --- Fichiers cachés de Windows et macOS (fuite de noms de fichiers) ---
+Thumbs.db
+desktop.ini
+.DS_Store
