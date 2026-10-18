@@ -5,24 +5,25 @@
 <article>
   <header class="article-entete">
     <h1>{{ .Title }}</h1>
-
-    {{/* Date et tags seulement pour les articles, pas pour « À propos »
-         (qui n'est dans aucune section, donc .Section est vide). */}}
+    {{/* Date, temps de lecture, tags… seulement pour les articles, pas pour
+         « À propos » (qui n'est dans aucune section, donc .Section est vide). */}}
     {{ if .Section }}
-    <ul class="meta">
-      <li><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></li>
-      {{/* Champs propres aux write-ups (voir le front matter dans CLAUDE.md). */}}
-      {{ with .Params.plateforme }}<li>Plateforme : <strong>{{ . }}</strong></li>{{ end }}
-      {{ with .Params.difficulte }}<li>Difficulté : <strong>{{ . }}</strong></li>{{ end }}
-    </ul>
-
-    {{ with .GetTerms "tags" }}
-    <ul class="tags" aria-label="Tags">
-      {{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}
-    </ul>
-    {{ end }}
+      {{ partial "article-meta.html" . }}
     {{ end }}
   </header>
+
+  {{/* Sommaire automatique, affiché si :
+       - l'article a au moins 2 titres (sinon un sommaire ne sert à rien) ;
+       - et le front matter ne contient pas « sommaire: false ».
+       .Fragments.Identifiers : la liste des ancres des titres de l'article. */}}
+  {{ if and (ge (len .Fragments.Identifiers) 2) (ne .Params.sommaire false) }}
+  <details class="sommaire" open>
+    <summary>Sommaire</summary>
+    {{/* Hugo produit <nav id="TableOfContents">. On lui ajoute un nom
+         (aria-label) pour que les lecteurs d'écran l'annoncent « Sommaire ». */}}
+    {{ replace .TableOfContents `<nav id="TableOfContents">` `<nav id="TableOfContents" aria-label="Sommaire">` | safeHTML }}
+  </details>
+  {{ end }}
 
   {{/* .prose : mise en forme de lecture, ~70 caractères par ligne
        (main.css, partie 10). */}}

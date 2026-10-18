@@ -1,0 +1,32 @@
+{{/*
+  Métadonnées sous le titre d'un article : date, temps de lecture, et pour
+  les write-ups la plateforme et la difficulté. Puis les tags.
+  Appelé par page.html avec la page : {{ partial "article-meta.html" . }}
+*/}}
+<ul class="meta">
+  <li><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></li>
+
+  {{/* .ReadingTime : Hugo compte les mots et divise par ~213 mots/minute. */}}
+  <li>{{ .ReadingTime }} min de lecture</li>
+
+  {{/* Champs propres aux write-ups (voir le front matter dans CLAUDE.md). */}}
+  {{ with .Params.plateforme }}<li>Plateforme : <strong>{{ . }}</strong></li>{{ end }}
+
+  {{ with .Params.difficulte }}
+    {{/* Seules trois valeurs sont prévues. Une faute de frappe (« Facile »,
+         « moyenne »…) n'empêche pas la construction, mais Hugo affiche un
+         avertissement avec le nom du fichier à corriger. */}}
+    {{ $valeurs := slice "facile" "moyen" "difficile" }}
+    {{ if not (in $valeurs .) }}
+      {{ warnf "%s : difficulte « %s » inconnue (attendu : facile, moyen ou difficile)" $.File.Path . }}
+    {{ end }}
+    {{/* Le mot est toujours écrit : la couleur seule ne suffit pas. */}}
+    <li>Difficulté : <span class="difficulte difficulte-{{ . | urlize }}">{{ . }}</span></li>
+  {{ end }}
+</ul>
+
+{{ with .GetTerms "tags" }}
+<ul class="tags" aria-label="Tags">
+  {{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}
+</ul>
+{{ end }}

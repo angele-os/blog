@@ -23,7 +23,8 @@ enableRobotsTXT = true
   auteur = "Ange Bonkoski"
 
 # Forme des adresses des articles : /journal/nom-de-l-article/
-# :slug reprend le nom du fichier (ou le champ « slug » du front matter).
+# :slug reprend le champ « slug » du front matter s'il existe, sinon le
+# TITRE de l'article (« Exemple de write-up » → exemple-de-write-up).
 [permalinks.page]
   journal = "/journal/:slug/"
   writeups = "/writeups/:slug/"
@@ -53,6 +54,12 @@ enableRobotsTXT = true
   # au lieu de styles en ligne (style="…"), interdits par notre CSP.
   [markup.highlight]
     noClasses = false
+  # Sommaire automatique : Hugo liste les titres ## (niveau 2) et ### (niveau 3)
+  # de l'article. ordered = false : liste à puces plutôt que numérotée.
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false
   # Refuse le HTML brut écrit dans le Markdown : plus sûr, et empêche
   # d'y glisser par erreur un <script> ou un style en ligne.
   [markup.goldmark.renderer]

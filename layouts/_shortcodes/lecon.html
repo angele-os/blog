@@ -1,0 +1,17 @@
+{{/*
+  Encadré « Leçon » : ce qu'on retient d'une étape.
+  Dans un article (le contenu est du Markdown) :
+
+    {{< lecon >}}
+    Toujours tester la **restauration** d'une sauvegarde.
+    {{< /lecon >}}
+
+  Titre personnalisé (facultatif) : {{< lecon titre="À retenir" >}} … {{< /lecon >}}
+*/}}
+{{ partial "encadre.html" (dict
+  "type" "lecon"
+  "titre" (.Get "titre" | default "Leçon")
+  "contenu" .InnerDeindent
+  "page" .Page
+  "position" .Position
+) }}

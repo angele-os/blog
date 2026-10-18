@@ -7,11 +7,12 @@
    Aucun JavaScript : tout est en CSS.
 
    SOMMAIRE (Ctrl+F sur le numéro pour sauter à une partie)
-    1. Police                 6. Verre liquide        11. Code
-    2. Variables (clair)      7. En-tête              12. Métadonnées et tags
-    3. Variables (sombre)     8. Mise en page         13. Pied de page
-    4. Base                   9. Cartes               14. Préférences d'accessibilité
-    5. Décor d'ambiance      10. Article (lecture)    15. Impression
+    1. Police                 7. En-tête              13. Sommaire
+    2. Variables (clair)      8. Mise en page         14. Encadrés Leçon / Attention
+    3. Variables (sombre)     9. Cartes               15. Pied de page
+    4. Base                  10. Article (lecture)    16. Préférences d'accessibilité
+    5. Décor d'ambiance      11. Code                 17. Impression
+    6. Verre liquide         12. Métadonnées et tags
    ========================================================================== */
 
 /* 1. POLICE ----------------------------------------------------------------
@@ -83,13 +84,15 @@
     0 2px 4px rgba(20, 24, 29, .05),
     0 24px 48px -24px rgba(20, 24, 29, .32);
 
-  /* Code */
+  /* Code : fond des blocs. Les couleurs du code elles-mêmes viennent de
+     code-clair.css / code-sombre.css (générés, voir scripts/). */
   --code-bg: #E2E7E9;
-  --syn-mot: #1D5A66;        /* mots-clés */
-  --syn-texte: #24704C;      /* chaînes de caractères */
-  --syn-nombre: #8A4B12;     /* nombres, constantes */
-  --syn-fonction: #3B4C94;   /* fonctions, commandes */
-  --syn-commentaire: #59636D;
+
+  /* Encadrés et niveaux de difficulté (texte écrit dans ces couleurs) */
+  --attention: #8A4B12;      /* ambre brun */
+  --facile: #1F6844;         /* vert */
+  --moyen: #8A4B12;          /* ambre brun */
+  --difficile: #A3352B;      /* brique */
 
   /* Formes et mouvement (repris du portfolio) */
   --r-xl: 34px; --r-lg: 26px; --r-md: 18px; --r-sm: 12px;
@@ -141,11 +144,11 @@
       0 24px 48px -24px rgba(0, 0, 0, .70);
 
     --code-bg: #182026;
-    --syn-mot: #7CC0CB;
-    --syn-texte: #8FCB9F;
-    --syn-nombre: #E3B37A;
-    --syn-fonction: #AEBBF2;
-    --syn-commentaire: #95A1AB;
+
+    --attention: #E3B37A;
+    --facile: #8FCB9F;
+    --moyen: #E3B37A;
+    --difficile: #F0A096;
   }
 }
 
@@ -553,9 +556,10 @@ body::before {
 }
 
 /* 11. CODE ---------------------------------------------------------------------
-   Coloration syntaxique faite main : Hugo (moteur « Chroma ») pose des
-   classes courtes sur chaque morceau de code, et on leur donne nos couleurs.
-   Comme ce sont nos variables, la coloration suit le mode clair/sombre. */
+   Ici : seulement la MISE EN FORME des blocs (marges, coins, défilement).
+   Les COULEURS du code sont dans code-clair.css et code-sombre.css, générés
+   par « hugo gen chromastyles » (scripts/generer-styles-code.sh) et chargés
+   selon le mode par head.html. */
 code,
 pre {
   font-family: var(--mono);
@@ -585,25 +589,18 @@ pre {
 .prose pre code { font-size: 1em; }
 .prose .highlight { margin-bottom: 1.25em; }
 
-/* Correspondance classes Chroma → couleurs */
-.chroma { color: var(--ink); }
-.chroma :is(.k, .kc, .kd, .kn, .kp, .kr, .kt, .ow, .nt) { color: var(--syn-mot); }
-.chroma :is(.s, .s1, .s2, .sa, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss, .dl) { color: var(--syn-texte); }
-.chroma :is(.m, .mb, .mf, .mh, .mi, .il, .mo, .no, .bp) { color: var(--syn-nombre); }
-.chroma :is(.nf, .fm, .nb, .nc, .na, .nd) { color: var(--syn-fonction); }
-.chroma :is(.c, .ch, .cm, .c1, .cs, .cp, .cpf) { color: var(--syn-commentaire); font-style: italic; }
-.chroma .gd { color: var(--syn-nombre); }   /* ligne supprimée (diff) */
-.chroma .gi { color: var(--syn-texte); }    /* ligne ajoutée (diff) */
-.chroma .gh, .chroma .gu { color: var(--syn-mot); font-weight: 650; }
-.chroma .ge { font-style: italic; }
-.chroma .gs { font-weight: 650; }
-.chroma .err { color: inherit; }            /* pas de rouge criard pour un faux positif */
+/* Les thèmes générés ont un fond blanc pur (clair) ou noir pur (sombre) :
+   on le remplace par notre fond de code, plus doux. Les contrastes des
+   couleurs générées ont été vérifiés sur ce fond. main.css est chargé
+   après les feuilles générées, donc cette règle l'emporte. */
+.chroma,
+.prose .bg { background-color: var(--code-bg); }
 
 /* 12. MÉTADONNÉES ET TAGS --------------------------------------------------------- */
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: .3rem 1.2rem;
+  gap: .3rem .6rem;
   margin: 0 0 1rem;
   padding: 0;
   list-style: none;
@@ -611,6 +608,30 @@ pre {
   font-size: .92rem;
 }
 .meta strong { color: var(--ink-2); font-weight: 600; }
+/* Petit point entre deux informations (date · temps de lecture) */
+.meta li + li::before {
+  content: '·';
+  margin-right: .6rem;
+  color: var(--ink-3);
+}
+.carte .date span::before { content: ' · '; }
+
+/* Difficulté d'un write-up : pastille avec le mot écrit (la couleur seule
+   ne suffit pas : daltonisme, impression en noir et blanc…). currentColor
+   reprend la couleur du texte pour le fond teinté et la bordure. */
+.difficulte {
+  display: inline-block;
+  padding: 0 .6rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-weight: 650;
+  font-size: .85rem;
+  line-height: 1.6;
+}
+.difficulte-facile { color: var(--facile); }
+.difficulte-moyen { color: var(--moyen); }
+.difficulte-difficile { color: var(--difficile); }
 
 .tags {
   display: flex;
@@ -637,7 +658,68 @@ pre {
 .tags a:hover { background: var(--surface); }
 .tags .nombre { margin-left: .35em; color: var(--ink-3); }
 
-/* 13. PIED DE PAGE ------------------------------------------------------------- */
+/* 13. SOMMAIRE ------------------------------------------------------------------
+   Liste des titres de l'article, générée par Hugo (<nav id="TableOfContents">)
+   et placée dans un <details> : repliable d'un clic, sans JavaScript.
+   Pas de verre : il fait partie de la lecture. */
+.sommaire {
+  max-width: var(--mesure);
+  margin-bottom: 2.5rem;
+  padding: .9rem 1.3rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-md);
+  font-size: .98rem;
+  line-height: 1.5;
+}
+.sommaire summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--ink);
+}
+.sommaire summary:hover { color: var(--accent); }
+.sommaire ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  list-style: none;
+}
+/* Premier niveau collé à gauche ; le second (###) reste indenté */
+.sommaire #TableOfContents > ul { padding-left: 0; margin-top: .7rem; }
+.sommaire li { margin: .35rem 0; }
+.sommaire a {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+.sommaire a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* 14. ENCADRÉS « LEÇON » ET « ATTENTION » --------------------------------------------
+   Produits par les shortcodes {{< lecon >}} et {{< attention >}}.
+   Chaque type ne fait que choisir sa couleur (--teinte) ; le reste est commun. */
+.encadre {
+  --teinte: var(--accent);
+  margin: 2em 0;
+  padding: 1rem 1.25rem 1.1rem;
+  border-left: 4px solid var(--teinte);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+  background: color-mix(in srgb, var(--teinte) 12%, transparent);
+}
+.encadre-attention { --teinte: var(--attention); }
+.encadre-titre {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0 0 .4rem;
+  color: var(--teinte);
+  font-weight: 650;
+}
+.encadre-titre svg { flex-shrink: 0; }
+.encadre-contenu { color: var(--ink-2); }
+.encadre-contenu > * { margin: 0 0 .8em; }
+.encadre-contenu > :last-child { margin-bottom: 0; }
+
+/* 15. PIED DE PAGE ------------------------------------------------------------- */
 .pied {
   padding: 2rem var(--gouttiere) 2.5rem;
   border-top: 1px solid var(--line);
@@ -649,7 +731,7 @@ pre {
 .pied a { color: var(--ink-2); }
 .pied a:hover { color: var(--ink); }
 
-/* 14. PRÉFÉRENCES D'ACCESSIBILITÉ ----------------------------------------------- */
+/* 16. PRÉFÉRENCES D'ACCESSIBILITÉ ----------------------------------------------- */
 /* Animations réduites (réglage du système) : plus aucun mouvement */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -672,11 +754,12 @@ pre {
 /* Contraste élevé de Windows : le système impose ses couleurs, on garde
    juste des bordures visibles et on retire les décors. */
 @media (forced-colors: active) {
-  .verre, .tableau, .tags a { border: 1px solid CanvasText; }
+  .verre, .tableau, .tags a, .sommaire { border: 1px solid CanvasText; }
+  .encadre { border: 1px solid CanvasText; border-left-width: 4px; }
   .verre::before, .verre::after, body::before { display: none; }
 }
 
-/* 15. IMPRESSION --------------------------------------------------------------- */
+/* 17. IMPRESSION --------------------------------------------------------------- */
 @media print {
   body { background: #fff; color: #000; font-size: 11pt; }
   body::before, .entete, .evitement, .pied { display: none; }
@@ -694,6 +777,9 @@ pre {
   /* Sur papier, on ne peut pas cliquer : on écrit l'adresse après le lien */
   .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .85em; color: #555; }
   .prose pre { white-space: pre-wrap; border-color: #ccc; }
-  .prose pre, .prose blockquote, .tableau, .prose img { break-inside: avoid; }
+  .prose pre, .prose blockquote, .tableau, .prose img, .encadre { break-inside: avoid; }
+  /* À l'impression, le code est imprimé sans fond : on garde un cadre */
+  .chroma, .prose .bg { background: none; }
+  .sommaire { display: none; }
   .prose :is(h2, h3, h4) { break-after: avoid; }
 }

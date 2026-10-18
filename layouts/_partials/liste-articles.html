@@ -12,7 +12,7 @@
     <article>
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{/* <time> donne aussi la date dans un format lisible par les machines. */}}
-      <p class="date"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
+      <p class="date"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time><span>{{ .ReadingTime }} min de lecture</span></p>
       {{ with .Summary }}<p class="resume">{{ . | plainify }}</p>{{ end }}
     </article>
   </li>

@@ -1,0 +1,17 @@
+{{/*
+  Encadré « Attention » : un piège, une commande dangereuse, un risque.
+  Dans un article (le contenu est du Markdown) :
+
+    {{< attention >}}
+    Cette commande **efface** tout le disque.
+    {{< /attention >}}
+
+  Titre personnalisé (facultatif) : {{< attention titre="Avant de commencer" >}} … {{< /attention >}}
+*/}}
+{{ partial "encadre.html" (dict
+  "type" "attention"
+  "titre" (.Get "titre" | default "Attention")
+  "contenu" .InnerDeindent
+  "page" .Page
+  "position" .Position
+) }}

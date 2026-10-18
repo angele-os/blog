@@ -17,6 +17,17 @@
      uniquement depuis notre propre site. Valeur définie dans CLAUDE.md. */}}
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
 
+{{/* Couleurs du code (générées par scripts/generer-styles-code.sh).
+     L'attribut media dit au navigateur quelle feuille appliquer : la
+     claire en mode clair, la sombre en mode sombre. Chargées AVANT
+     main.css pour que main.css puisse ajuster leur fond. */}}
+{{ range $mode, $fichier := dict "light" "css/code-clair.css" "dark" "css/code-sombre.css" }}
+  {{ with resources.Get $fichier }}
+    {{ $css := . | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" media="(prefers-color-scheme: {{ $mode }})">
+  {{ end }}
+{{ end }}
+
 {{/* Feuille de style. Hugo la prend dans assets/css/, la compresse
      (minify) puis ajoute une empreinte dans son nom (fingerprint), par ex.
      main.3f2a….css : à chaque modification le nom change, donc les
