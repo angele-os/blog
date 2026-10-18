@@ -1,0 +1,58 @@
+{{- /*
+  Remplace l'affichage des images Markdown ![texte alternatif](image.png "Légende").
+
+  1. Texte alternatif OBLIGATOIRE : il est lu par les lecteurs d'écran et
+     affiché si l'image ne charge pas. ![](image.png) arrête la construction,
+     avec le nom du fichier : une image sans description n'est jamais publiée.
+  2. Image venant d'un autre site (https://…) : interdite, la CSP la
+     bloquerait (img-src 'self'). La construction s'arrête aussi.
+  3. Image rangée avec l'article (« page bundle » : un dossier
+     content/journal/mon-article/ contenant index.md et les images) :
+     Hugo lit sa largeur et sa hauteur et les écrit dans la balise. Le
+     navigateur réserve ainsi la place avant le chargement : le texte ne
+     « saute » pas quand l'image arrive.
+  4. loading="lazy" : l'image n'est téléchargée que lorsqu'on s'en approche
+     en faisant défiler ; decoding="async" : son décodage ne bloque pas
+     l'affichage du texte.
+  5. Image seule dans son paragraphe avec une légende ("Légende" ci-dessus) :
+     <figure> + <figcaption>, la légende s'affiche sous l'image.
+*/ -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $src := .Destination -}}
+{{- $largeur := 0 -}}
+{{- $hauteur := 0 -}}
+
+{{- if not .PlainText -}}
+  {{- errorf "%s : l'image « %s » n'a pas de texte alternatif. Écris ![description de l'image](%s)." .Page.File.Path .Destination .Destination -}}
+{{- end -}}
+
+{{- if $u.IsAbs -}}
+  {{- errorf "%s : l'image « %s » vient d'un autre site, ce que la CSP interdit. Enregistre-la dans le dossier de l'article (sans métadonnées)." .Page.File.Path .Destination -}}
+{{- else -}}
+  {{- /* Cherche l'image à côté de l'article, puis dans assets/. Une image de
+         static/ n'est pas lue par Hugo : elle s'affiche, mais sans dimensions. */ -}}
+  {{- with or (.PageInner.Resources.Get $u.Path) (resources.Get $u.Path) -}}
+    {{- $src = .RelPermalink -}}
+    {{- /* Seules les images « matricielles » ont une taille en pixels (pas le SVG). */ -}}
+    {{- if in (slice "jpeg" "png" "webp" "gif") .MediaType.SubType -}}
+      {{- $largeur = .Width -}}
+      {{- $hauteur = .Height -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* La balise <img>, construite une seule fois et réutilisée plus bas.
+       htmlEscape transforme " < > & en entités : un guillemet dans le texte
+       ou l'adresse ne peut pas « casser » la balise. */ -}}
+{{- $img := printf `<img src="%s" alt="%s"` ($src | htmlEscape) (.PlainText | htmlEscape) -}}
+{{- if $largeur }}{{ $img = printf `%s width="%d" height="%d"` $img $largeur $hauteur }}{{ end -}}
+{{- $img = printf `%s loading="lazy" decoding="async">` $img -}}
+
+{{- if and .IsBlock .Title -}}
+<figure>
+  {{ $img | safeHTML }}
+  <figcaption>{{ .Title }}</figcaption>
+</figure>
+{{- else -}}
+{{ $img | safeHTML }}
+{{- end -}}

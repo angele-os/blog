@@ -7,7 +7,9 @@
 <div class="intro">
   {{ .Content }}
   {{ with site.GetPage "/a-propos" }}
-  <p><a href="{{ .RelPermalink }}">En savoir plus sur moi →</a></p>
+  {{/* Flèches décoratives : aria-hidden évite qu'un lecteur d'écran lise
+       « flèche droite » à la fin du lien. */}}
+  <p><a href="{{ .RelPermalink }}">En savoir plus sur moi <span aria-hidden="true">→</span></a></p>
   {{ end }}
 </div>
 
@@ -17,12 +19,12 @@
 {{ $articles := where site.RegularPages "Section" "in" (slice "journal" "writeups") }}
 <section class="bloc-section" aria-labelledby="derniers-articles">
   <h2 id="derniers-articles">Derniers articles</h2>
-  {{ partial "liste-articles.html" (dict "pages" (first 5 $articles) "afficherType" true) }}
+  {{ partial "liste-articles.html" (dict "pages" (first 5 $articles) "afficherType" true "niveau" 3) }}
 
   {{/* Liens vers les listes complètes de chaque section. */}}
   <ul class="liens-sections">
-    {{ with site.GetPage "/journal" }}<li><a href="{{ .RelPermalink }}">Tout le journal →</a></li>{{ end }}
-    {{ with site.GetPage "/writeups" }}<li><a href="{{ .RelPermalink }}">Tous les write-ups →</a></li>{{ end }}
+    {{ with site.GetPage "/journal" }}<li><a href="{{ .RelPermalink }}">Tout le journal <span aria-hidden="true">→</span></a></li>{{ end }}
+    {{ with site.GetPage "/writeups" }}<li><a href="{{ .RelPermalink }}">Tous les write-ups <span aria-hidden="true">→</span></a></li>{{ end }}
   </ul>
 </section>
 {{ end }}

@@ -10,6 +10,6 @@
   {{ partial "pagination.html" . }}
 </div>
 {{ with site.GetPage "/tags" }}
-<p><a href="{{ .RelPermalink }}">← Tous les tags</a></p>
+<p><a href="{{ .RelPermalink }}"><span aria-hidden="true">←</span> Tous les tags</a></p>
 {{ end }}
 {{ end }}

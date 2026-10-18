@@ -460,17 +460,19 @@ body::before {
   border-radius: var(--r-lg);
   transition: transform .5s var(--ease), box-shadow .5s var(--ease);
 }
-.carte h3 {
+/* Titre de carte : <h2> ou <h3> selon la page (voir liste-articles.html).
+   :is(h2, h3) = « h2 ou h3 », une seule règle pour les deux. */
+.carte :is(h2, h3) {
   margin: 0 0 .3rem;
   font-size: 1.3rem;
   font-stretch: 88%;
   letter-spacing: -.015em;
 }
-.carte h3 a {
+.carte :is(h2, h3) a {
   color: var(--ink);
   text-decoration: none;
 }
-.carte h3 a::after {
+.carte :is(h2, h3) a::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -517,11 +519,11 @@ body::before {
     transform: translateY(-3px);
     box-shadow: inset 0 1px 0 var(--verre-reflet), var(--ombre-survol);
   }
-  .carte:hover h3 a { color: var(--accent); }
+  .carte:hover :is(h2, h3) a { color: var(--accent); }
 }
 /* Au clavier : le focus du lien entoure toute la carte */
-.carte h3 a:focus-visible { outline: none; }
-.carte:has(h3 a:focus-visible) {
+.carte :is(h2, h3) a:focus-visible { outline: none; }
+.carte:has(:is(h2, h3) a:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -596,6 +598,16 @@ body::before {
 }
 
 .prose img { border-radius: var(--r-sm); }
+
+/* Image avec légende (layouts/_markup/render-image.html) */
+.prose figure { margin: 2em 0; }
+.prose figcaption {
+  margin-top: .6rem;
+  color: var(--ink-3);
+  font-size: .9rem;
+  line-height: 1.5;
+  text-align: center;
+}
 
 /* Tableaux : enveloppés par layouts/_markup/render-table.html dans un bloc
    qui défile horizontalement si le tableau est trop large. */

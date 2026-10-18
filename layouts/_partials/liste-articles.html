@@ -5,17 +5,29 @@
     {{ partial "liste-articles.html" (dict "pages" $articles "afficherType" true) }}
   - pages        : les articles à afficher ;
   - afficherType : true pour écrire « Journal » ou « Write-up » sur chaque
-                   carte (utile quand la liste mélange les deux sections).
+                   carte (utile quand la liste mélange les deux sections) ;
+  - niveau       : niveau du titre de chaque carte, 2 par défaut (<h2>).
+                   Les titres doivent se suivre sans sauter de niveau, pour
+                   les lecteurs d'écran qui naviguent de titre en titre :
+                   sous le <h1> d'une page de liste -> <h2> ;
+                   sous le <h2> « Derniers articles » de l'accueil -> 3.
   Chaque article est une carte de verre entièrement cliquable
   (main.css, partie 9).
 */}}
 {{ $afficherType := .afficherType }}
+{{ $niveau := .niveau | default 2 }}
 {{ with .pages }}
 <ul class="liste-articles">
   {{ range . }}
   <li class="carte verre">
     <article>
+      {{/* Hugo n'accepte pas une variable dans un nom de balise (<h{{ … }}>) :
+           on écrit donc les deux cas. */}}
+      {{ if eq $niveau 3 }}
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+      {{ else }}
+      <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+      {{ end }}
 
       {{/* Une ligne d'informations ; main.css place un « · » entre chaque élément. */}}
       <p class="carte-infos">

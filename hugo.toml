@@ -93,6 +93,12 @@ enableRobotsTXT = true
     startLevel = 2
     endLevel = 3
     ordered = false
+  # Une image seule sur sa ligne n'est pas enfermée dans un paragraphe <p> :
+  # le gabarit des images (layouts/_markup/render-image.html) peut alors
+  # l'afficher dans un <figure> avec sa légende (un <figure> ne peut pas
+  # être placé dans un <p>).
+  [markup.goldmark.parser]
+    wrapStandAloneImageWithinParagraph = false
   # Refuse le HTML brut écrit dans le Markdown : plus sûr, et empêche
   # d'y glisser par erreur un <script> ou un style en ligne.
   [markup.goldmark.renderer]

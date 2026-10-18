@@ -22,6 +22,7 @@ hugo server -D     # en affichant aussi les brouillons
 bash scripts/verifier-fuites.sh   # IP, jetons, clés, webhooks
 bash scripts/verifier-exif.sh     # métadonnées EXIF / XMP des images
 hugo --gc --minify && bash scripts/verifier-csp.sh   # respect de la CSP
+bash scripts/verifier-accessibilite.sh               # titres, alt, langue… (après hugo)
 ```
 
 ## Sécurité
