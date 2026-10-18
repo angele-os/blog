@@ -1,0 +1,10 @@
+{{/*
+  Pastille de difficulté d'un write-up (facile / moyen / difficile).
+  Appelé avec la page : {{ partial "difficulte.html" . }}
+  N'affiche rien si l'article n'a pas de champ « difficulte ».
+  Le mot est toujours écrit : la couleur seule ne suffit pas
+  (daltonisme, impression en noir et blanc…).
+*/}}
+{{ with .Params.difficulte }}
+<span class="difficulte difficulte-{{ . | urlize }}">{{ . }}</span>
+{{- end -}}

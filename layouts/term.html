@@ -1,9 +1,15 @@
 {{/*
-  Page d'un tag (ex. /tags/hugo/) : tous les articles qui portent ce tag.
+  Page d'un tag (ex. /tags/hugo/) : tous les articles qui portent ce tag,
+  journal et write-ups mélangés (d'où l'étiquette de type sur les cartes).
 */}}
 {{ define "main" }}
+{{ $pagination := .Paginate .Pages }}
 <h1>Tag : #{{ .Title }}</h1>
 <div class="bloc-section">
-  {{ partial "liste-articles.html" .Pages }}
+  {{ partial "liste-articles.html" (dict "pages" $pagination.Pages "afficherType" true) }}
+  {{ partial "pagination.html" . }}
 </div>
+{{ with site.GetPage "/tags" }}
+<p><a href="{{ .RelPermalink }}">← Tous les tags</a></p>
+{{ end }}
 {{ end }}

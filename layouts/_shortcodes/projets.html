@@ -1,0 +1,28 @@
+{{/*
+  Affiche en cartes la liste « projets » du front matter de la page.
+  Utilisé dans content/a-propos.md : {{< projets >}}
+  Chaque projet a : nom, adresse, description.
+  (Pas « sites » : ce mot est réservé par Hugo dans le front matter.)
+  Ce sont de simples liens : rien n'est chargé depuis ces sites.
+*/}}
+{{ with .Page.Params.projets }}
+<ul class="liste-articles liste-sites">
+  {{ range . }}
+  <li class="carte verre">
+    <h3>
+      <a href="{{ .adresse }}">
+        {{ .nom }}
+        {{/* La flèche montre visuellement un lien vers un autre site ;
+             les lecteurs d'écran entendent « (autre site) » à la place. */}}
+        <span aria-hidden="true">↗</span><span class="sr-seul"> (autre site)</span>
+      </a>
+    </h3>
+    {{/* Le nom de domaine seul (sans https://), pour savoir où mène le lien. */}}
+    <p class="carte-infos"><span>{{ (urls.Parse .adresse).Host }}</span></p>
+    <p class="resume">{{ .description }}</p>
+  </li>
+  {{ end }}
+</ul>
+{{ else }}
+  {{ errorf "%s : le shortcode « projets » n'a trouvé aucune liste « projets » dans le front matter." .Position }}
+{{ end }}

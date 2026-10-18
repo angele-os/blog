@@ -1,12 +1,19 @@
 {{/*
   Page d'une section (/journal/, /writeups/) : son texte d'introduction
-  (le fichier _index.md du dossier) puis la liste de tous ses articles,
+  (le fichier _index.md du dossier) puis la liste de ses articles,
   du plus récent au plus ancien (ordre par défaut de Hugo).
+  .Paginate découpe la liste en pages (taille : [pagination] dans hugo.toml) ;
+  les suivantes sont à /journal/page/2/, /journal/page/3/…
 */}}
 {{ define "main" }}
+{{ $pagination := .Paginate .Pages }}
 <h1>{{ .Title }}</h1>
+{{/* L'introduction seulement sur la première page, pas sur les suivantes. */}}
+{{ if eq $pagination.PageNumber 1 }}
 <div class="intro">{{ .Content }}</div>
+{{ end }}
 <div class="bloc-section">
-  {{ partial "liste-articles.html" .Pages }}
+  {{ partial "liste-articles.html" (dict "pages" $pagination.Pages) }}
+  {{ partial "pagination.html" . }}
 </div>
 {{ end }}

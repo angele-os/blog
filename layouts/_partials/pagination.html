@@ -1,0 +1,22 @@
+{{/*
+  Liens « Plus récents » / « Plus anciens » sous une liste paginée.
+  Appelé avec la page de liste : {{ partial "pagination.html" . }}
+  La page doit avoir appelé .Paginate avant (voir section.html).
+  N'affiche rien s'il n'y a qu'une seule page.
+*/}}
+{{ $p := .Paginator }}
+{{ if gt $p.TotalPages 1 }}
+<nav class="pagination" aria-label="Pagination">
+  {{/* Les articles sont du plus récent au plus ancien : la page
+       précédente contient donc les articles plus récents. */}}
+  {{ if $p.HasPrev }}
+  <a href="{{ $p.Prev.URL }}" rel="prev"><span aria-hidden="true">←</span> Plus récents</a>
+  {{ end }}
+
+  <p class="pagination-position">Page {{ $p.PageNumber }} sur {{ $p.TotalPages }}</p>
+
+  {{ if $p.HasNext }}
+  <a href="{{ $p.Next.URL }}" rel="next">Plus anciens <span aria-hidden="true">→</span></a>
+  {{ end }}
+</nav>
+{{ end }}

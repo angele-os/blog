@@ -394,20 +394,55 @@ body::before {
 .intro p { margin: 0 0 1rem; }
 
 .bloc-section { margin-top: 3.5rem; }
-.bloc-section-titre {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1.2rem;
-}
-.bloc-section-titre h2 {
-  margin: 0;
+.bloc-section > h2 {
+  margin: 0 0 1.2rem;
   font-size: 1.6rem;
   font-stretch: 85%;
   letter-spacing: -.02em;
 }
-.tout-voir { font-size: .95rem; font-weight: 550; }
+
+/* « Tout le journal → », « Tous les write-ups → » sous les derniers articles */
+.liens-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 550;
+}
+
+/* Pagination : « ← Plus récents · Page 2 sur 3 · Plus anciens → » */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem 1.25rem;
+  margin-top: 2.5rem;
+}
+.pagination a {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  min-height: 44px;          /* cible tactile confortable */
+  padding: 0 1.1rem;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background-color .3s, border-color .3s;
+}
+.pagination a:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+}
+.pagination-position {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: .92rem;
+  font-variant-numeric: tabular-nums;
+}
 
 /* 9. CARTES -------------------------------------------------------------------
    Un article dans une liste. Toute la carte est cliquable grâce au lien du
@@ -442,12 +477,34 @@ body::before {
   z-index: 1;
   border-radius: inherit;
 }
-.carte .date {
-  margin: 0;
+/* Ligne d'informations (type · date · temps de lecture) */
+.carte-infos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: .2rem 0 0;
   color: var(--ink-3);
   font-size: .88rem;
   font-variant-numeric: tabular-nums;
 }
+/* Un point « · » entre deux éléments, ajouté par le CSS (pas dans le HTML) */
+.carte-infos > * + *::before {
+  content: '·';
+  margin: 0 .5rem;
+  color: var(--ink-3);
+}
+/* Type de l'article (Journal / Write-up) sur les listes mélangées */
+.carte-type {
+  color: var(--accent);
+  font-weight: 650;
+}
+
+/* Cartes des autres sites (page À propos), placées dans un article :
+   on annule la mise en forme des listes et titres du texte (.prose). */
+.prose .liste-sites { padding: 0; }
+.prose .liste-sites li { margin: 0; }
+.prose .liste-sites h3 { margin: 0 0 .1rem; font-size: 1.25rem; }
+.prose .liste-sites .resume { margin-top: .4rem; }
 .carte .resume {
   margin: .55rem 0 0;
   color: var(--ink-2);
@@ -614,7 +671,6 @@ pre {
   margin-right: .6rem;
   color: var(--ink-3);
 }
-.carte .date span::before { content: ' · '; }
 
 /* Difficulté d'un write-up : pastille avec le mot écrit (la couleur seule
    ne suffit pas : daltonisme, impression en noir et blanc…). currentColor
@@ -727,7 +783,20 @@ pre {
   font-size: .88rem;
   text-align: center;
 }
-.pied p { margin: .2rem 0; }
+/* Les éléments sur une ligne, séparés par un « · » (comme .carte-infos) */
+.pied-liens {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .3rem 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pied-liens > li + li::before {
+  content: '·';
+  margin: 0 .6rem;
+}
 .pied a { color: var(--ink-2); }
 .pied a:hover { color: var(--ink); }
 
@@ -762,7 +831,7 @@ pre {
 /* 17. IMPRESSION --------------------------------------------------------------- */
 @media print {
   body { background: #fff; color: #000; font-size: 11pt; }
-  body::before, .entete, .evitement, .pied { display: none; }
+  body::before, .entete, .evitement, .pied, .pagination { display: none; }
   .verre {
     background: #fff;
     box-shadow: none;

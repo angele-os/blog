@@ -1,19 +1,28 @@
 {{/*
-  Page d'accueil : le texte de content/_index.md, puis les derniers
-  articles de chaque section.
+  Page d'accueil : la présentation (content/_index.md), puis les
+  derniers articles, journal et write-ups mélangés.
 */}}
 {{ define "main" }}
 <h1>{{ site.Title }}</h1>
-<div class="intro">{{ .Content }}</div>
+<div class="intro">
+  {{ .Content }}
+  {{ with site.GetPage "/a-propos" }}
+  <p><a href="{{ .RelPermalink }}">En savoir plus sur moi →</a></p>
+  {{ end }}
+</div>
 
-{{/* Pour chaque section (journal, writeups), on affiche les 5 plus récents. */}}
-{{ range .Sections }}
-<section class="bloc-section" aria-labelledby="section-{{ .Section }}">
-  <div class="bloc-section-titre">
-    <h2 id="section-{{ .Section }}">{{ .Title }}</h2>
-    <a class="tout-voir" href="{{ .RelPermalink }}">Tout voir<span class="sr-seul"> : {{ .Title }}</span> →</a>
-  </div>
-  {{ partial "liste-articles.html" (first 5 .Pages) }}
+{{/* site.RegularPages : tous les articles du site (pas les pages de liste),
+     déjà triés du plus récent au plus ancien. On garde ceux des deux
+     sections, puis les 5 premiers. */}}
+{{ $articles := where site.RegularPages "Section" "in" (slice "journal" "writeups") }}
+<section class="bloc-section" aria-labelledby="derniers-articles">
+  <h2 id="derniers-articles">Derniers articles</h2>
+  {{ partial "liste-articles.html" (dict "pages" (first 5 $articles) "afficherType" true) }}
+
+  {{/* Liens vers les listes complètes de chaque section. */}}
+  <ul class="liens-sections">
+    {{ with site.GetPage "/journal" }}<li><a href="{{ .RelPermalink }}">Tout le journal →</a></li>{{ end }}
+    {{ with site.GetPage "/writeups" }}<li><a href="{{ .RelPermalink }}">Tous les write-ups →</a></li>{{ end }}
+  </ul>
 </section>
-{{ end }}
 {{ end }}

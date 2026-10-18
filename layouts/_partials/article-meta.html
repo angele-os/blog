@@ -20,8 +20,7 @@
     {{ if not (in $valeurs .) }}
       {{ warnf "%s : difficulte « %s » inconnue (attendu : facile, moyen ou difficile)" $.File.Path . }}
     {{ end }}
-    {{/* Le mot est toujours écrit : la couleur seule ne suffit pas. */}}
-    <li>Difficulté : <span class="difficulte difficulte-{{ . | urlize }}">{{ . }}</span></li>
+    <li>Difficulté : {{ partial "difficulte.html" $ }}</li>
   {{ end }}
 </ul>
 

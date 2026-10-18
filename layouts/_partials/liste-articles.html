@@ -1,18 +1,43 @@
 {{/*
   Liste d'articles, réutilisée par l'accueil, les sections et les tags.
-  On l'appelle avec une collection de pages :
-    {{ partial "liste-articles.html" .Pages }}
+  On l'appelle avec un dict (un petit paquet de valeurs nommées) :
+    {{ partial "liste-articles.html" (dict "pages" .Pages) }}
+    {{ partial "liste-articles.html" (dict "pages" $articles "afficherType" true) }}
+  - pages        : les articles à afficher ;
+  - afficherType : true pour écrire « Journal » ou « Write-up » sur chaque
+                   carte (utile quand la liste mélange les deux sections).
   Chaque article est une carte de verre entièrement cliquable
   (main.css, partie 9).
 */}}
-{{ with . }}
+{{ $afficherType := .afficherType }}
+{{ with .pages }}
 <ul class="liste-articles">
   {{ range . }}
   <li class="carte verre">
     <article>
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-      {{/* <time> donne aussi la date dans un format lisible par les machines. */}}
-      <p class="date"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time><span>{{ .ReadingTime }} min de lecture</span></p>
+
+      {{/* Une ligne d'informations ; main.css place un « · » entre chaque élément. */}}
+      <p class="carte-infos">
+        {{/* « singulier » est défini dans le _index.md de chaque section
+             (« Journal », « Write-up ») ; à défaut, on prend son titre. */}}
+        {{ if $afficherType }}
+          {{ with .CurrentSection }}<span class="carte-type">{{ .Params.singulier | default .Title }}</span>{{ end }}
+        {{ end }}
+        {{/* <time> donne aussi la date dans un format lisible par les machines. */}}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time>
+        <span>{{ .ReadingTime }} min de lecture</span>
+      </p>
+
+      {{/* Write-ups : plateforme et difficulté, visibles dès la liste. */}}
+      {{ if or .Params.plateforme .Params.difficulte }}
+      <p class="carte-infos">
+        {{ with .Params.plateforme }}<span>{{ . }}</span>{{ end }}
+        {{/* « if » (et non « with ») : on garde l'article comme contexte « . ». */}}
+        {{ if .Params.difficulte }}<span>{{ partial "difficulte.html" . }}</span>{{ end }}
+      </p>
+      {{ end }}
+
       {{ with .Summary }}<p class="resume">{{ . | plainify }}</p>{{ end }}
     </article>
   </li>

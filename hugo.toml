@@ -21,6 +21,18 @@ enableRobotsTXT = true
 [params]
   description = "Journal de mon homelab et write-ups de labs de cybersécurité."
   auteur = "Ange Bonkoski"
+  # Lien « Portfolio » du pied de page.
+  portfolio = "https://ange-bonkoski.fr/"
+
+# Pagination des listes (/journal/, /writeups/, pages de tags) :
+# 10 articles par page, les suivantes à /journal/page/2/, etc.
+[pagination]
+  pagerSize = 10
+
+# Flux RSS : seulement les 20 derniers articles (un flux n'est pas
+# une archive, et un fichier plus léger se télécharge plus vite).
+[services.rss]
+  limit = 20
 
 # Forme des adresses des articles : /journal/nom-de-l-article/
 # :slug reprend le champ « slug » du front matter s'il existe, sinon le
