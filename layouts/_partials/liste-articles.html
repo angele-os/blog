@@ -2,20 +2,22 @@
   Liste d'articles, réutilisée par l'accueil, les sections et les tags.
   On l'appelle avec une collection de pages :
     {{ partial "liste-articles.html" .Pages }}
+  Chaque article est une carte de verre entièrement cliquable
+  (main.css, partie 9).
 */}}
 {{ with . }}
 <ul class="liste-articles">
   {{ range . }}
-  <li>
+  <li class="carte verre">
     <article>
       <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
       {{/* <time> donne aussi la date dans un format lisible par les machines. */}}
-      <p><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
-      {{ with .Summary }}<p>{{ . | plainify }}</p>{{ end }}
+      <p class="date"><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
+      {{ with .Summary }}<p class="resume">{{ . | plainify }}</p>{{ end }}
     </article>
   </li>
   {{ end }}
 </ul>
 {{ else }}
-<p>Aucun article pour le moment.</p>
+<p class="vide">Aucun article pour le moment.</p>
 {{ end }}

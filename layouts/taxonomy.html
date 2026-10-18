@@ -5,7 +5,7 @@
 <h1>Tags</h1>
 <ul class="tags">
   {{ range .Data.Terms.ByCount }}
-  <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle }}</a> ({{ .Count }})</li>
+  <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle }}<span class="nombre">{{ .Count }}</span></a></li>
   {{ end }}
 </ul>
 {{ end }}

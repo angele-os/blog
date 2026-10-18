@@ -22,4 +22,15 @@ ni JavaScript. Pour le lancer en local :
 hugo server
 ```
 
-Puis on ouvre l'adresse affichée dans le terminal.
+Puis on ouvre l'adresse affichée dans le terminal. La commande `hugo`
+seule construit le site final dans le dossier `public/`.
+
+> Le site ne charge rien depuis un autre serveur : polices, styles et
+> images sont tous servis par le blog lui-même.
+
+## Les deux types d'articles
+
+| Type      | Contenu                           | Exemple            |
+|:----------|:----------------------------------|-------------------:|
+| Journal   | récit d'une étape du homelab      | installer Docker   |
+| Write-up  | solution commentée d'un lab       | une box TryHackMe  |

@@ -5,10 +5,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+{{/* Le site sait s'afficher en clair et en sombre : le navigateur peut
+     donc choisir le bon fond dès le premier affichage. theme-color colore
+     la barre du navigateur sur mobile (fond brume ou ardoise). */}}
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#EDF0F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1417" media="(prefers-color-scheme: dark)">
+
 {{/* Politique de sécurité (CSP) : le navigateur refuse tout ce qui n'est pas
      explicitement autorisé. Ici : aucun script, et styles, images et polices
      uniquement depuis notre propre site. Valeur définie dans CLAUDE.md. */}}
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
+
+{{/* Feuille de style. Hugo la prend dans assets/css/, la compresse
+     (minify) puis ajoute une empreinte dans son nom (fingerprint), par ex.
+     main.3f2a….css : à chaque modification le nom change, donc les
+     visiteurs ne gardent jamais une vieille version en cache.
+     integrity : le navigateur vérifie que le fichier n'a pas été altéré. */}}
+{{ with resources.Get "css/main.css" }}
+  {{ $css := . | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{ end }}
+
+{{/* Demande la police principale tout de suite, sans attendre que le
+     navigateur la découvre dans le CSS : le texte change moins de police
+     à l'affichage. crossorigin est obligatoire pour les polices. */}}
+<link rel="preload" href="{{ "fonts/instrument-sans-latin-standard-normal.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
 
 {{/* Titre de l'onglet : « Article — Blog » ou juste le nom du site à l'accueil. */}}
 <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} — {{ site.Title }}{{ end }}</title>

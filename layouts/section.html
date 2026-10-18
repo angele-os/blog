@@ -5,6 +5,8 @@
 */}}
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
-{{ .Content }}
-{{ partial "liste-articles.html" .Pages }}
+<div class="intro">{{ .Content }}</div>
+<div class="bloc-section">
+  {{ partial "liste-articles.html" .Pages }}
+</div>
 {{ end }}

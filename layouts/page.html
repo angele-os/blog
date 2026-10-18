@@ -3,17 +3,18 @@
 */}}
 {{ define "main" }}
 <article>
-  <header>
+  <header class="article-entete">
     <h1>{{ .Title }}</h1>
 
     {{/* Date et tags seulement pour les articles, pas pour « À propos »
          (qui n'est dans aucune section, donc .Section est vide). */}}
     {{ if .Section }}
-    <p><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
-
-    {{/* Champs propres aux write-ups (voir le front matter dans CLAUDE.md). */}}
-    {{ with .Params.plateforme }}<p>Plateforme : {{ . }}</p>{{ end }}
-    {{ with .Params.difficulte }}<p>Difficulté : {{ . }}</p>{{ end }}
+    <ul class="meta">
+      <li><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></li>
+      {{/* Champs propres aux write-ups (voir le front matter dans CLAUDE.md). */}}
+      {{ with .Params.plateforme }}<li>Plateforme : <strong>{{ . }}</strong></li>{{ end }}
+      {{ with .Params.difficulte }}<li>Difficulté : <strong>{{ . }}</strong></li>{{ end }}
+    </ul>
 
     {{ with .GetTerms "tags" }}
     <ul class="tags" aria-label="Tags">
@@ -23,6 +24,10 @@
     {{ end }}
   </header>
 
-  {{ .Content }}
+  {{/* .prose : mise en forme de lecture, ~70 caractères par ligne
+       (main.css, partie 10). */}}
+  <div class="prose">
+    {{ .Content }}
+  </div>
 </article>
 {{ end }}

@@ -3,5 +3,7 @@
 */}}
 {{ define "main" }}
 <h1>Tag : #{{ .Title }}</h1>
-{{ partial "liste-articles.html" .Pages }}
+<div class="bloc-section">
+  {{ partial "liste-articles.html" .Pages }}
+</div>
 {{ end }}

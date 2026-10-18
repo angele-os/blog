@@ -10,6 +10,10 @@ title = "Blog d'Ange Bonkoski"
 locale = "fr-FR"
 defaultContentLanguage = "fr"
 
+# Par défaut, Hugo met une majuscule aux titres qu'il fabrique lui-même
+# (ex. le tag « hugo » devient « Hugo »). On garde les tags tels qu'écrits.
+capitalizeListTitles = false
+
 # Génère un robots.txt (fichier lu par les moteurs de recherche).
 enableRobotsTXT = true
 

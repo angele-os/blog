@@ -1,0 +1,30 @@
+{{/*
+  Remplace l'affichage des tableaux Markdown par défaut, pour deux raisons :
+  1. Hugo aligne les colonnes (:---: ou ---:) avec style="text-align:…",
+     un style en ligne que notre CSP bloque. On utilise des classes à la place.
+  2. On enveloppe le tableau dans un bloc qui défile horizontalement s'il
+     est trop large pour l'écran. tabindex="0" permet de le faire défiler
+     au clavier ; role et aria-label l'annoncent aux lecteurs d'écran.
+*/}}
+<div class="tableau" role="region" aria-label="Tableau" tabindex="0">
+<table>
+  <thead>
+    {{- range .THead }}
+    <tr>
+      {{- range . }}
+      <th{{ with .Alignment }} class="aligne-{{ . }}"{{ end }}>{{ .Text }}</th>
+      {{- end }}
+    </tr>
+    {{- end }}
+  </thead>
+  <tbody>
+    {{- range .TBody }}
+    <tr>
+      {{- range . }}
+      <td{{ with .Alignment }} class="aligne-{{ . }}"{{ end }}>{{ .Text }}</td>
+      {{- end }}
+    </tr>
+    {{- end }}
+  </tbody>
+</table>
+</div>

@@ -4,12 +4,15 @@
 */}}
 {{ define "main" }}
 <h1>{{ site.Title }}</h1>
-{{ .Content }}
+<div class="intro">{{ .Content }}</div>
 
 {{/* Pour chaque section (journal, writeups), on affiche les 5 plus récents. */}}
 {{ range .Sections }}
-<section>
-  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+<section class="bloc-section" aria-labelledby="section-{{ .Section }}">
+  <div class="bloc-section-titre">
+    <h2 id="section-{{ .Section }}">{{ .Title }}</h2>
+    <a class="tout-voir" href="{{ .RelPermalink }}">Tout voir<span class="sr-seul"> : {{ .Title }}</span> →</a>
+  </div>
   {{ partial "liste-articles.html" (first 5 .Pages) }}
 </section>
 {{ end }}

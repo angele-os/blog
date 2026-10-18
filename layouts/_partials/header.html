@@ -1,9 +1,15 @@
 {{/*
   En-tête : nom du site (lien vers l'accueil) et menu principal.
   Les entrées du menu viennent de [menus] dans hugo.toml.
+  .verre : l'effet « liquid glass » (main.css, partie 6).
 */}}
-<header class="entete">
-  <a class="entete-titre" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+<header class="entete verre">
+  <a class="entete-titre" href="{{ site.Home.RelPermalink }}">
+    {{/* Monogramme décoratif : aria-hidden pour que les lecteurs d'écran
+         ne lisent pas « A B » avant le nom. */}}
+    <span class="entete-mono" aria-hidden="true">AB</span>
+    {{ site.Title }}
+  </a>
   <nav aria-label="Navigation principale">
     <ul>
       {{ range site.Menus.main }}

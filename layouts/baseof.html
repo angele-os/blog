@@ -15,7 +15,8 @@
 
   {{ partial "header.html" . }}
 
-  <main id="contenu">
+  {{/* .page : colonne centrée de largeur limitée (voir main.css, partie 8). */}}
+  <main id="contenu" class="page">
     {{ block "main" . }}{{ end }}
   </main>
 

@@ -1,0 +1,699 @@
+/* ==========================================================================
+   Blog — Ange Bonkoski
+   Même identité que le portfolio v2 (« ardoise et brume ») : fond gris brume,
+   encre presque noire, un seul accent bleu pétrole, police Instrument Sans.
+   Différence avec le portfolio : ici on LIT de longs textes. Le verre liquide
+   est donc réservé à l'en-tête et aux cartes, jamais derrière un article.
+   Aucun JavaScript : tout est en CSS.
+
+   SOMMAIRE (Ctrl+F sur le numéro pour sauter à une partie)
+    1. Police                 6. Verre liquide        11. Code
+    2. Variables (clair)      7. En-tête              12. Métadonnées et tags
+    3. Variables (sombre)     8. Mise en page         13. Pied de page
+    4. Base                   9. Cartes               14. Préférences d'accessibilité
+    5. Décor d'ambiance      10. Article (lecture)    15. Impression
+   ========================================================================== */
+
+/* 1. POLICE ----------------------------------------------------------------
+   Instrument Sans (licence SIL OFL, voir static/fonts/OFL.txt), servie par
+   le site lui-même : aucune requête vers Google Fonts.
+   Un seul fichier « variable » par style : il contient toutes les graisses
+   (400 à 700) et largeurs (75 % à 100 %), d'où les plages ci-dessous.
+   font-display:swap : le texte s'affiche tout de suite avec une police
+   système, puis bascule sur Instrument Sans dès qu'elle est chargée. */
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  src: url('/fonts/instrument-sans-latin-standard-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Instrument Sans';
+  font-style: italic;
+  font-weight: 400 700;
+  font-stretch: 75% 100%;
+  font-display: swap;
+  src: url('/fonts/instrument-sans-latin-standard-italic.woff2') format('woff2');
+}
+
+/* 2. VARIABLES — MODE CLAIR ------------------------------------------------
+   Toutes les couleurs du site sont ici. Le mode sombre (partie 3) ne fait
+   que changer ces valeurs : le reste du CSS n'a jamais besoin de savoir
+   dans quel mode on est.
+   Contrastes vérifiés (norme WCAG AA : au moins 4,5:1 pour le texte),
+   y compris sur les halos et sous le verre. */
+:root {
+  color-scheme: light dark;  /* barres de défilement et champs suivent le thème */
+
+  /* Couleurs (reprises du portfolio) */
+  --bg: #EDF0F1;             /* brume */
+  --surface: #FFFFFF;
+  --ink: #14181D;            /* encre : texte principal */
+  --ink-2: #46505A;          /* texte secondaire */
+  --ink-3: #59636D;          /* texte discret (dates…) */
+  --accent: #1D5A66;         /* bleu pétrole : liens */
+  --accent-deep: #143F48;    /* survol des liens */
+  --accent-soft: rgba(29, 90, 102, .10);
+  --accent-line: rgba(29, 90, 102, .30);
+  --line: rgba(20, 24, 29, .09);
+  --line-2: rgba(20, 24, 29, .16);
+  --selection: rgba(29, 90, 102, .18);
+  --actif: rgba(255, 255, 255, .88);   /* fond du lien de menu actif */
+
+  /* Halos d'ambiance (plus discrets que sur le portfolio, pour la lecture) */
+  --halo-1: rgba(29, 90, 102, .10);
+  --halo-2: rgba(84, 112, 150, .12);
+  --halo-3: rgba(205, 190, 166, .30);
+  --halo-4: rgba(110, 170, 180, .16);
+
+  /* Verre */
+  --verre-haut: rgba(255, 255, 255, .58);
+  --verre-bas: rgba(255, 255, 255, .34);
+  --verre-bord: rgba(255, 255, 255, .60);
+  --verre-reflet: rgba(255, 255, 255, .95);  /* arête éclairée en haut */
+  --verre-eclat: rgba(255, 255, 255, .50);   /* lumière venant d'en haut à gauche */
+  --verre-flou: 14px;
+  --ombre-verre:
+    0 1px 1px rgba(20, 24, 29, .04),
+    0 14px 34px -18px rgba(20, 24, 29, .26),
+    0 44px 90px -48px rgba(29, 90, 102, .32);
+  --ombre-survol:
+    0 2px 4px rgba(20, 24, 29, .05),
+    0 24px 48px -24px rgba(20, 24, 29, .32);
+
+  /* Code */
+  --code-bg: #E2E7E9;
+  --syn-mot: #1D5A66;        /* mots-clés */
+  --syn-texte: #24704C;      /* chaînes de caractères */
+  --syn-nombre: #8A4B12;     /* nombres, constantes */
+  --syn-fonction: #3B4C94;   /* fonctions, commandes */
+  --syn-commentaire: #59636D;
+
+  /* Formes et mouvement (repris du portfolio) */
+  --r-xl: 34px; --r-lg: 26px; --r-md: 18px; --r-sm: 12px;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+
+  /* Typographie */
+  --sans: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --mesure: 70ch;            /* largeur de ligne idéale pour lire : ~70 caractères */
+  --gouttiere: clamp(1rem, 4vw, 2rem);  /* marge sur les côtés de l'écran */
+}
+
+/* 3. VARIABLES — MODE SOMBRE -----------------------------------------------
+   Activé automatiquement quand le système (Windows, macOS, téléphone) est en
+   mode sombre. Fond ardoise, encre claire, pétrole éclairci pour rester
+   lisible sur fond foncé. Seules les variables changent. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F1417;
+    --surface: #182026;
+    --ink: #E8ECEE;
+    --ink-2: #B3BDC5;
+    --ink-3: #95A1AB;
+    --accent: #7CC0CB;
+    --accent-deep: #A6D7DF;
+    --accent-soft: rgba(124, 192, 203, .12);
+    --accent-line: rgba(124, 192, 203, .35);
+    --line: rgba(255, 255, 255, .09);
+    --line-2: rgba(255, 255, 255, .16);
+    --selection: rgba(124, 192, 203, .28);
+    --actif: rgba(255, 255, 255, .10);
+
+    --halo-1: rgba(29, 90, 102, .30);
+    --halo-2: rgba(84, 112, 150, .20);
+    --halo-3: rgba(205, 190, 166, .08);
+    --halo-4: rgba(110, 170, 180, .12);
+
+    --verre-haut: rgba(38, 48, 58, .62);
+    --verre-bas: rgba(38, 48, 58, .42);
+    --verre-bord: rgba(255, 255, 255, .10);
+    --verre-reflet: rgba(255, 255, 255, .14);
+    --verre-eclat: rgba(255, 255, 255, .06);
+    --ombre-verre:
+      0 1px 1px rgba(0, 0, 0, .20),
+      0 14px 34px -18px rgba(0, 0, 0, .55),
+      0 44px 90px -48px rgba(0, 0, 0, .60);
+    --ombre-survol:
+      0 2px 4px rgba(0, 0, 0, .25),
+      0 24px 48px -24px rgba(0, 0, 0, .70);
+
+    --code-bg: #182026;
+    --syn-mot: #7CC0CB;
+    --syn-texte: #8FCB9F;
+    --syn-nombre: #E3B37A;
+    --syn-fonction: #AEBBF2;
+    --syn-commentaire: #95A1AB;
+  }
+}
+
+/* 4. BASE ------------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* Quand on suit un lien vers un titre (#ancre), on laisse de la place
+     pour l'en-tête collant, sinon il cacherait le titre. */
+  scroll-padding-top: 6rem;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.125rem;       /* 18 px : confortable pour de longs textes */
+  line-height: 1.7;          /* interligne aéré */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* Le pied de page reste en bas même sur une page très courte */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  color: var(--ink);
+  line-height: 1.15;
+  font-weight: 650;
+  text-wrap: balance;        /* lignes de titre de longueurs équilibrées */
+}
+p, li { text-wrap: pretty; } /* évite un mot tout seul en dernière ligne */
+strong { font-weight: 650; }
+img { display: block; max-width: 100%; height: auto; }
+
+a { color: var(--accent); text-underline-offset: .18em; }
+a:hover { color: var(--accent-deep); }
+
+::selection { background: var(--selection); }
+
+/* Contour de focus : visible seulement au clavier, jamais supprimé */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Texte invisible à l'écran mais lu par les lecteurs d'écran
+   (ex. préciser « Tout voir : Journal » au lieu d'un simple « Tout voir »). */
+.sr-seul {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Lien d'évitement : caché au-dessus de l'écran, il descend quand on
+   l'atteint avec la touche Tab. */
+.evitement {
+  position: absolute;
+  left: 1rem;
+  top: -5rem;
+  z-index: 100;
+  padding: .7rem 1.2rem;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: top .25s var(--ease);
+}
+.evitement:focus-visible { top: 1rem; color: var(--bg); }
+
+/* 5. DÉCOR D'AMBIANCE ------------------------------------------------------
+   Quatre halos colorés très doux, fixes, derrière toute la page. Ils ne
+   servent qu'à donner quelque chose à flouter au verre : sans décor
+   derrière lui, un verre ne se voit pas. Pas d'animation : on lit. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vmax 60vmax at -5% -10%, var(--halo-1), transparent 70%),
+    radial-gradient(45vmax 45vmax at 105% 10%, var(--halo-2), transparent 70%),
+    radial-gradient(55vmax 55vmax at 40% 75%, var(--halo-3), transparent 70%),
+    radial-gradient(40vmax 40vmax at 100% 95%, var(--halo-4), transparent 70%);
+}
+
+/* 6. VERRE LIQUIDE ---------------------------------------------------------
+   Même recette que le portfolio, sans la partie JavaScript :
+   - fond blanc translucide en dégradé (plus opaque en haut) ;
+   - backdrop-filter : floute et sature ce qui est derrière ;
+   - ::before : éclat de lumière venant d'en haut à gauche ;
+   - ::after : liseré lumineux sur les bords (l'épaisseur du verre).
+   Classe .verre utilisée UNIQUEMENT par l'en-tête et les cartes. */
+.verre {
+  position: relative;
+  isolation: isolate;        /* garde les reflets ::before derrière le texte */
+  background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas));
+  border: 1px solid var(--verre-bord);
+  -webkit-backdrop-filter: blur(var(--verre-flou)) saturate(170%);
+          backdrop-filter: blur(var(--verre-flou)) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 var(--verre-reflet),
+    var(--ombre-verre);
+}
+.verre::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(110% 70% at 0% 0%, var(--verre-eclat), transparent 55%);
+}
+.verre::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(140deg, var(--verre-reflet), transparent 35%, transparent 60%, var(--verre-eclat));
+  /* Le masque ne garde que la bordure de 1 px : on obtient un liseré en dégradé */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+}
+
+/* 7. EN-TÊTE -----------------------------------------------------------------
+   Une pilule de verre qui reste collée en haut pendant le défilement. */
+.entete {
+  position: sticky;
+  top: .75rem;
+  z-index: 10;
+  width: min(100% - 2 * var(--gouttiere), 60rem);
+  margin: .75rem auto 0;
+  padding: .4rem .5rem .4rem .6rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+}
+.entete-titre {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  min-height: 44px;          /* cible tactile confortable */
+  padding-right: .4rem;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -.01em;
+  text-decoration: none;
+}
+.entete-titre:hover { color: var(--ink); }
+/* Monogramme « AB », comme sur le portfolio */
+.entete-mono {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: .78rem;
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: .02em;
+}
+.entete nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.entete nav a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 .95rem;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: .95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color .3s, background-color .3s;
+}
+.entete nav a:hover { color: var(--ink); }
+/* Lien de la section en cours : une pastille claire, comme l'indicateur du portfolio */
+.entete nav a[aria-current] {
+  color: var(--ink);
+  background: var(--actif);
+  box-shadow: inset 0 1px 0 var(--verre-reflet), 0 1px 2px rgba(20, 24, 29, .08);
+}
+
+/* Petit écran : le menu passe sous le nom du site. Une pilule sur deux
+   lignes serait étrange, on arrondit donc moins. L'en-tête ne colle plus
+   en haut pour ne pas manger la moitié de l'écran. */
+@media (max-width: 40rem) {
+  .entete {
+    position: relative;
+    top: auto;
+    border-radius: var(--r-lg);
+    padding: .5rem;
+  }
+  .entete nav { width: 100%; }
+  .entete nav ul { justify-content: space-between; }
+  .entete nav a { padding: 0 .8rem; }
+}
+
+/* 8. MISE EN PAGE ------------------------------------------------------------ */
+.page {
+  flex: 1;                   /* pousse le pied de page vers le bas */
+  width: min(100% - 2 * var(--gouttiere), 46rem);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vw, 4.5rem) 0 4rem;
+}
+
+/* Titres de page : légèrement condensés, comme ceux du portfolio */
+.page h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  line-height: 1.05;
+  font-stretch: 80%;
+  letter-spacing: -.025em;
+}
+.intro { color: var(--ink-2); }
+.intro p { margin: 0 0 1rem; }
+
+.bloc-section { margin-top: 3.5rem; }
+.bloc-section-titre {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.bloc-section-titre h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-stretch: 85%;
+  letter-spacing: -.02em;
+}
+.tout-voir { font-size: .95rem; font-weight: 550; }
+
+/* 9. CARTES -------------------------------------------------------------------
+   Un article dans une liste. Toute la carte est cliquable grâce au lien du
+   titre, étendu sur toute la carte par un ::after invisible (pas besoin
+   de JavaScript, et un seul lien pour les lecteurs d'écran). */
+.liste-articles {
+  display: grid;
+  gap: 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.carte {
+  padding: 1.4rem 1.6rem 1.5rem;
+  border-radius: var(--r-lg);
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.carte h3 {
+  margin: 0 0 .3rem;
+  font-size: 1.3rem;
+  font-stretch: 88%;
+  letter-spacing: -.015em;
+}
+.carte h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.carte h3 a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+.carte .date {
+  margin: 0;
+  color: var(--ink-3);
+  font-size: .88rem;
+  font-variant-numeric: tabular-nums;
+}
+.carte .resume {
+  margin: .55rem 0 0;
+  color: var(--ink-2);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+/* Survol (souris seulement) : la carte se soulève légèrement */
+@media (hover: hover) {
+  .carte:hover {
+    transform: translateY(-3px);
+    box-shadow: inset 0 1px 0 var(--verre-reflet), var(--ombre-survol);
+  }
+  .carte:hover h3 a { color: var(--accent); }
+}
+/* Au clavier : le focus du lien entoure toute la carte */
+.carte h3 a:focus-visible { outline: none; }
+.carte:has(h3 a:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.vide { color: var(--ink-3); font-style: italic; }
+
+/* 10. ARTICLE (LECTURE) -------------------------------------------------------
+   Le cœur du blog. Pas de verre ici : du texte net sur un fond calme.
+   Largeur limitée à ~70 caractères pour que l'œil retrouve facilement
+   le début de la ligne suivante. */
+.article-entete { margin-bottom: 2.5rem; }
+
+.prose {
+  max-width: var(--mesure);
+  color: var(--ink);
+  overflow-wrap: break-word; /* une très longue URL ne déborde pas */
+}
+/* Espacement vertical régulier entre les blocs */
+.prose > * { margin-top: 0; margin-bottom: 1.25em; }
+.prose > :last-child { margin-bottom: 0; }
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 2.2em;
+  margin-bottom: .6em;
+  letter-spacing: -.015em;
+}
+.prose h2 { font-size: 1.65rem; font-stretch: 85%; }
+.prose h3 { font-size: 1.3rem; font-stretch: 90%; }
+.prose h4 { font-size: 1.1rem; }
+/* Un titre qui suit directement un autre titre n'a pas besoin d'autant d'espace */
+.prose :is(h2, h3, h4) + :is(h2, h3, h4) { margin-top: 1em; }
+
+.prose a { text-decoration-thickness: .08em; }
+.prose a:hover { text-decoration-thickness: .14em; }
+
+.prose ul,
+.prose ol { padding-left: 1.4em; }
+.prose li { margin-bottom: .35em; }
+.prose li::marker { color: var(--accent); }
+
+.prose blockquote {
+  margin-left: 0;
+  margin-right: 0;
+  padding: .2em 0 .2em 1.2em;
+  border-left: 3px solid var(--accent-line);
+  color: var(--ink-2);
+}
+.prose blockquote > :last-child { margin-bottom: 0; }
+
+.prose hr {
+  margin: 3em 0;
+  border: 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.prose img { border-radius: var(--r-sm); }
+
+/* Tableaux : enveloppés par layouts/_markup/render-table.html dans un bloc
+   qui défile horizontalement si le tableau est trop large. */
+.tableau {
+  overflow-x: auto;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-sm);
+}
+.tableau table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .95rem;
+  line-height: 1.5;
+}
+.tableau th,
+.tableau td {
+  padding: .6em .9em;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.tableau th { font-weight: 650; background: var(--accent-soft); }
+.tableau tr:last-child td { border-bottom: 0; }
+/* Alignement des colonnes (:---:, ---:) : par classes, car la CSP
+   interdit les styles en ligne qu'Hugo utiliserait par défaut. */
+.tableau .aligne-center { text-align: center; }
+.tableau .aligne-right { text-align: right; }
+
+/* Mots coupés en fin de ligne seulement sur petit écran, où les lignes
+   sont courtes (la langue « fr » de la page donne les règles de coupure). */
+@media (max-width: 40rem) {
+  .prose { hyphens: auto; }
+}
+
+/* 11. CODE ---------------------------------------------------------------------
+   Coloration syntaxique faite main : Hugo (moteur « Chroma ») pose des
+   classes courtes sur chaque morceau de code, et on leur donne nos couleurs.
+   Comme ce sont nos variables, la coloration suit le mode clair/sombre. */
+code,
+pre {
+  font-family: var(--mono);
+  font-size: .875em;
+}
+/* Code dans une phrase */
+:not(pre) > code {
+  padding: .12em .38em;
+  border-radius: 6px;
+  background: var(--code-bg);
+  font-size: .85em;
+}
+/* Bloc de code */
+.prose pre,
+.prose .highlight {
+  border-radius: var(--r-sm);
+}
+.prose pre {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  overflow-x: auto;          /* les lignes longues défilent au lieu de déborder */
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  line-height: 1.55;
+  tab-size: 2;
+}
+.prose pre code { font-size: 1em; }
+.prose .highlight { margin-bottom: 1.25em; }
+
+/* Correspondance classes Chroma → couleurs */
+.chroma { color: var(--ink); }
+.chroma :is(.k, .kc, .kd, .kn, .kp, .kr, .kt, .ow, .nt) { color: var(--syn-mot); }
+.chroma :is(.s, .s1, .s2, .sa, .sb, .sc, .sd, .se, .sh, .si, .sx, .sr, .ss, .dl) { color: var(--syn-texte); }
+.chroma :is(.m, .mb, .mf, .mh, .mi, .il, .mo, .no, .bp) { color: var(--syn-nombre); }
+.chroma :is(.nf, .fm, .nb, .nc, .na, .nd) { color: var(--syn-fonction); }
+.chroma :is(.c, .ch, .cm, .c1, .cs, .cp, .cpf) { color: var(--syn-commentaire); font-style: italic; }
+.chroma .gd { color: var(--syn-nombre); }   /* ligne supprimée (diff) */
+.chroma .gi { color: var(--syn-texte); }    /* ligne ajoutée (diff) */
+.chroma .gh, .chroma .gu { color: var(--syn-mot); font-weight: 650; }
+.chroma .ge { font-style: italic; }
+.chroma .gs { font-weight: 650; }
+.chroma .err { color: inherit; }            /* pas de rouge criard pour un faux positif */
+
+/* 12. MÉTADONNÉES ET TAGS --------------------------------------------------------- */
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem 1.2rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-3);
+  font-size: .92rem;
+}
+.meta strong { color: var(--ink-2); font-weight: 600; }
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tags a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 .8rem;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  color: var(--accent);
+  font-size: .85rem;
+  font-weight: 550;
+  text-decoration: none;
+  transition: background-color .3s;
+}
+.tags a:hover { background: var(--surface); }
+.tags .nombre { margin-left: .35em; color: var(--ink-3); }
+
+/* 13. PIED DE PAGE ------------------------------------------------------------- */
+.pied {
+  padding: 2rem var(--gouttiere) 2.5rem;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3);
+  font-size: .88rem;
+  text-align: center;
+}
+.pied p { margin: .2rem 0; }
+.pied a { color: var(--ink-2); }
+.pied a:hover { color: var(--ink); }
+
+/* 14. PRÉFÉRENCES D'ACCESSIBILITÉ ----------------------------------------------- */
+/* Animations réduites (réglage du système) : plus aucun mouvement */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+  }
+  .carte:hover { transform: none; }
+}
+/* Transparence réduite : surfaces pleines, sans flou ni halos */
+@media (prefers-reduced-transparency: reduce) {
+  .verre {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+  .verre::before,
+  .verre::after,
+  body::before { display: none; }
+}
+/* Contraste élevé de Windows : le système impose ses couleurs, on garde
+   juste des bordures visibles et on retire les décors. */
+@media (forced-colors: active) {
+  .verre, .tableau, .tags a { border: 1px solid CanvasText; }
+  .verre::before, .verre::after, body::before { display: none; }
+}
+
+/* 15. IMPRESSION --------------------------------------------------------------- */
+@media print {
+  body { background: #fff; color: #000; font-size: 11pt; }
+  body::before, .entete, .evitement, .pied { display: none; }
+  .verre {
+    background: #fff;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+  .verre::before, .verre::after { display: none; }
+  .page { width: auto; padding: 0; }
+  .prose { max-width: none; }
+  .prose a { color: #000; }
+  /* Sur papier, on ne peut pas cliquer : on écrit l'adresse après le lien */
+  .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .85em; color: #555; }
+  .prose pre { white-space: pre-wrap; border-color: #ccc; }
+  .prose pre, .prose blockquote, .tableau, .prose img { break-inside: avoid; }
+  .prose :is(h2, h3, h4) { break-after: avoid; }
+}
