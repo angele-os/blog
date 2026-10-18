@@ -1,0 +1,17 @@
+{{/*
+  En-tête : nom du site (lien vers l'accueil) et menu principal.
+  Les entrées du menu viennent de [menus] dans hugo.toml.
+*/}}
+<header class="entete">
+  <a class="entete-titre" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
+  <nav aria-label="Navigation principale">
+    <ul>
+      {{ range site.Menus.main }}
+      <li>
+        {{/* aria-current indique aux lecteurs d'écran la section où l'on se trouve. */}}
+        <a href="{{ .URL }}"{{ if or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) }} aria-current="page"{{ end }}>{{ .Name }}</a>
+      </li>
+      {{ end }}
+    </ul>
+  </nav>
+</header>

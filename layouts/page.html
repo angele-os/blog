@@ -1,0 +1,28 @@
+{{/*
+  Une page seule : un article du journal, un write-up, ou « À propos ».
+*/}}
+{{ define "main" }}
+<article>
+  <header>
+    <h1>{{ .Title }}</h1>
+
+    {{/* Date et tags seulement pour les articles, pas pour « À propos »
+         (qui n'est dans aucune section, donc .Section est vide). */}}
+    {{ if .Section }}
+    <p><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
+
+    {{/* Champs propres aux write-ups (voir le front matter dans CLAUDE.md). */}}
+    {{ with .Params.plateforme }}<p>Plateforme : {{ . }}</p>{{ end }}
+    {{ with .Params.difficulte }}<p>Difficulté : {{ . }}</p>{{ end }}
+
+    {{ with .GetTerms "tags" }}
+    <ul class="tags" aria-label="Tags">
+      {{ range . }}<li><a href="{{ .RelPermalink }}">#{{ .LinkTitle }}</a></li>{{ end }}
+    </ul>
+    {{ end }}
+    {{ end }}
+  </header>
+
+  {{ .Content }}
+</article>
+{{ end }}

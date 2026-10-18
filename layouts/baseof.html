@@ -1,0 +1,24 @@
+{{/*
+  Squelette commun à toutes les pages du site.
+  Les autres gabarits (home, section, page…) ne remplissent que le bloc
+  « main » : en-tête, pied de page et <head> sont écrits une seule fois ici.
+*/}}
+<!doctype html>
+<html lang="fr">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  {{/* Lien d'évitement : au clavier, la touche Tab le fait apparaître en
+       premier et permet de sauter directement au contenu (accessibilité). */}}
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+
+  {{ partial "header.html" . }}
+
+  <main id="contenu">
+    {{ block "main" . }}{{ end }}
+  </main>
+
+  {{ partial "footer.html" . }}
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Configuration du blog — lue par Hugo à chaque construction.
+# Format TOML : « clé = valeur », et les [crochets] ouvrent une rubrique.
+
+# Adresse publique du site : Hugo s'en sert pour fabriquer les liens absolus
+# (lien canonique, flux RSS). Le « / » final est obligatoire.
+baseURL = "https://blog.ange-bonkoski.fr/"
+title = "Blog d'Ange Bonkoski"
+
+# Le site est uniquement en français.
+locale = "fr-FR"
+defaultContentLanguage = "fr"
+
+# Génère un robots.txt (fichier lu par les moteurs de recherche).
+enableRobotsTXT = true
+
+# Informations réutilisées dans les gabarits via .Site.Params.
+[params]
+  description = "Journal de mon homelab et write-ups de labs de cybersécurité."
+  auteur = "Ange Bonkoski"
+
+# Forme des adresses des articles : /journal/nom-de-l-article/
+# :slug reprend le nom du fichier (ou le champ « slug » du front matter).
+[permalinks.page]
+  journal = "/journal/:slug/"
+  writeups = "/writeups/:slug/"
+
+# On garde seulement les tags. Hugo active aussi les « categories » par
+# défaut : en les omettant ici, on évite des pages vides inutiles.
+[taxonomies]
+  tag = "tags"
+
+# Menu de navigation affiché dans l'en-tête. « weight » fixe l'ordre.
+[menus]
+  [[menus.main]]
+    name = "Journal"
+    pageRef = "/journal"
+    weight = 10
+  [[menus.main]]
+    name = "Write-ups"
+    pageRef = "/writeups"
+    weight = 20
+  [[menus.main]]
+    name = "À propos"
+    pageRef = "/a-propos"
+    weight = 30
+
+[markup]
+  # Coloration du code : avec noClasses = false, Hugo met des classes CSS
+  # au lieu de styles en ligne (style="…"), interdits par notre CSP.
+  [markup.highlight]
+    noClasses = false
+  # Refuse le HTML brut écrit dans le Markdown : plus sûr, et empêche
+  # d'y glisser par erreur un <script> ou un style en ligne.
+  [markup.goldmark.renderer]
+    unsafe = false

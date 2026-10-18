@@ -1,0 +1,16 @@
+{{/*
+  Page d'accueil : le texte de content/_index.md, puis les derniers
+  articles de chaque section.
+*/}}
+{{ define "main" }}
+<h1>{{ site.Title }}</h1>
+{{ .Content }}
+
+{{/* Pour chaque section (journal, writeups), on affiche les 5 plus récents. */}}
+{{ range .Sections }}
+<section>
+  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+  {{ partial "liste-articles.html" (first 5 .Pages) }}
+</section>
+{{ end }}
+{{ end }}

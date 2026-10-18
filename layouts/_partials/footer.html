@@ -1,0 +1,10 @@
+{{/*
+  Pied de page, identique sur toutes les pages.
+*/}}
+<footer class="pied">
+  <p>© {{ now.Year }} {{ site.Params.auteur }}</p>
+  {{/* Lien vers le flux RSS de tout le site. */}}
+  {{ with site.Home.OutputFormats.Get "rss" }}
+  <p><a href="{{ .RelPermalink }}">Flux RSS</a></p>
+  {{ end }}
+</footer>

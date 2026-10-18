@@ -1,0 +1,7 @@
+{{/*
+  Page d'un tag (ex. /tags/hugo/) : tous les articles qui portent ce tag.
+*/}}
+{{ define "main" }}
+<h1>Tag : #{{ .Title }}</h1>
+{{ partial "liste-articles.html" .Pages }}
+{{ end }}

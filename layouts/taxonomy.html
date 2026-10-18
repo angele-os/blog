@@ -1,0 +1,11 @@
+{{/*
+  Page /tags/ : la liste de tous les tags, avec le nombre d'articles.
+*/}}
+{{ define "main" }}
+<h1>Tags</h1>
+<ul class="tags">
+  {{ range .Data.Terms.ByCount }}
+  <li><a href="{{ .Page.RelPermalink }}">#{{ .Page.LinkTitle }}</a> ({{ .Count }})</li>
+  {{ end }}
+</ul>
+{{ end }}

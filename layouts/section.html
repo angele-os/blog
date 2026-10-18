@@ -1,0 +1,10 @@
+{{/*
+  Page d'une section (/journal/, /writeups/) : son texte d'introduction
+  (le fichier _index.md du dossier) puis la liste de tous ses articles,
+  du plus récent au plus ancien (ordre par défaut de Hugo).
+*/}}
+{{ define "main" }}
+<h1>{{ .Title }}</h1>
+{{ .Content }}
+{{ partial "liste-articles.html" .Pages }}
+{{ end }}
