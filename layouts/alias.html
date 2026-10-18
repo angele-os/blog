@@ -1,0 +1,23 @@
+{{- /*
+  Page de redirection produite par Hugo (ex. /journal/page/1/ -> /journal/).
+  Le modèle de Hugo n'a pas notre CSP : celui-ci reprend les mêmes balises
+  de sécurité que head.html, pour que TOUTES les pages HTML du site en aient
+  une (scripts/verifier-csp.sh le vérifie). La redirection se fait sans
+  JavaScript, par <meta http-equiv="refresh">.
+  .Permalink : l'adresse vers laquelle on redirige.
+*/ -}}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex">
+  <title>{{ .Permalink }}</title>
+  <link rel="canonical" href="{{ .Permalink }}">
+  <meta http-equiv="refresh" content="0; url={{ .Permalink }}">
+</head>
+<body>
+  <p>Cette page a déménagé : <a href="{{ .Permalink }}">{{ .Permalink }}</a></p>
+</body>
+</html>

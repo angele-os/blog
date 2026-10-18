@@ -1,0 +1,53 @@
+{{- /*
+  Remplace l'affichage des liens Markdown [texte](adresse) par défaut.
+
+  1. Lien vers un AUTRE site (http/https, autre domaine que le blog) :
+     on ajoute rel="noopener noreferrer".
+       noopener   : la page ouverte ne peut pas agir sur la nôtre
+                    (window.opener), même si elle s'ouvre dans un nouvel onglet ;
+       noreferrer : le navigateur n'envoie pas l'adresse de l'article au site
+                    visité (en plus de la balise <meta name="referrer">).
+     Pas de target="_blank" : le lien s'ouvre dans le même onglet, c'est le
+     comportement attendu (et le lecteur garde le choix : clic du milieu).
+
+  2. Lien vers un article du blog par son fichier ([voir](autre-article.md)
+     ou [voir](/journal/autre-article.md)) : remplacé par l'adresse réelle
+     de l'article. Si le fichier n'existe pas, la construction S'ARRÊTE :
+     un lien cassé ne part jamais en ligne.
+
+  3. Ancre seule ([plus bas](#titre)) : devient « adresse-de-l'article#titre »,
+     pour fonctionner aussi dans le flux RSS.
+
+  Tout le reste (/journal/, mailto:…) est laissé tel quel.
+  Le texte du lien (.Text) et l'infobulle éventuelle (.Title) sont conservés.
+*/ -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $href := .Destination -}}
+{{- $externe := false -}}
+
+{{- if $u.IsAbs -}}
+  {{- /* Adresse complète : externe si http(s) et domaine différent du blog. */ -}}
+  {{- $domaineDuBlog := (urls.Parse site.BaseURL).Host -}}
+  {{- if and (in (slice "http" "https") $u.Scheme) (ne $u.Host $domaineDuBlog) -}}
+    {{- $externe = true -}}
+  {{- end -}}
+
+{{- else if and (not $u.Path) $u.Fragment -}}
+  {{- /* Ancre seule : #titre */ -}}
+  {{- $href = printf "%s#%s" .PageInner.RelPermalink $u.Fragment -}}
+
+{{- else if strings.HasSuffix $u.Path ".md" -}}
+  {{- /* Lien vers un fichier d'article. GetPage le cherche à partir de
+         l'article courant (chemin relatif) ou de content/ (chemin en « / »). */ -}}
+  {{- with .PageInner.GetPage (strings.TrimPrefix "./" $u.Path) -}}
+    {{- $href = .RelPermalink -}}
+    {{- with $u.Fragment }}{{ $href = printf "%s#%s" $href . }}{{ end -}}
+  {{- else -}}
+    {{- errorf "%s : le lien vers « %s » ne mène à aucun article (lien cassé)." .Page.File.Path .Destination -}}
+  {{- end -}}
+{{- end -}}
+
+<a href="{{ $href }}"
+  {{- with .Title }} title="{{ . }}"{{ end }}
+  {{- if $externe }} rel="noopener noreferrer"{{ end }}>{{ .Text }}</a>
+{{- /* Pas de retour à la ligne final : il ajouterait un espace après le lien. */ -}}

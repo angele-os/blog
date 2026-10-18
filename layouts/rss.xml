@@ -33,6 +33,9 @@
     <link>{{ .Permalink }}</link>
     <description>{{ with .Params.summary }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}</description>
     <language>fr</language>
+    {{- with site.Params.licence }}
+    <copyright>{{ site.Params.auteur }}, licence {{ .nom }} ({{ .adresse }})</copyright>
+    {{- end }}
     {{- with $pages }}
     <lastBuildDate>{{ (index . 0).Date.Format $formatDate }}</lastBuildDate>
     {{- end }}

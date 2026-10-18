@@ -6,7 +6,12 @@
 <footer class="pied">
   <ul class="pied-liens">
     <li>© {{ now.Year }} {{ site.Params.auteur }}</li>
-    {{ with site.Params.portfolio }}<li><a href="{{ . }}">Portfolio</a></li>{{ end }}
+    {{/* Liens vers d'autres sites : rel="noopener noreferrer" (voir
+         layouts/_markup/render-link.html pour l'explication). */}}
+    {{ with site.Params.portfolio }}<li><a href="{{ . }}" rel="noopener noreferrer">Portfolio</a></li>{{ end }}
+    {{/* Licence des textes et images des articles (LICENSE-CONTENU).
+         rel="license" indique aux moteurs de recherche que c'est la licence. */}}
+    {{ with site.Params.licence }}<li>Textes sous licence <a href="{{ .adresse }}" rel="license noopener noreferrer">{{ .nom }}</a></li>{{ end }}
     {{ with site.GetPage "/tags" }}<li><a href="{{ .RelPermalink }}">Tags</a></li>{{ end }}
 
     {{/* Une section (Journal, Write-ups) a son propre flux : on le propose

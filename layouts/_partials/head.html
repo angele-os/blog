@@ -13,9 +13,27 @@
 <meta name="theme-color" content="#0F1417" media="(prefers-color-scheme: dark)">
 
 {{/* Politique de sécurité (CSP) : le navigateur refuse tout ce qui n'est pas
-     explicitement autorisé. Ici : aucun script, et styles, images et polices
-     uniquement depuis notre propre site. Valeur définie dans CLAUDE.md. */}}
+     explicitement autorisé. Valeur définie dans CLAUDE.md :
+       default-src 'none'   par défaut, rien n'est autorisé (scripts, iframes…)
+       style-src 'self'     feuilles de style de notre site seulement, aucun
+                            style en ligne (style="…")
+       img-src 'self'       images de notre site seulement
+       font-src 'self'      polices de notre site seulement
+       base-uri 'none'      interdit <base>, qui changerait la cible des liens
+       form-action 'none'   aucun formulaire ne peut envoyer de données
+     Placée tout en haut de <head> : elle ne protège que ce qui vient APRÈS elle.
+     Limite : GitHub Pages ne permet pas d'envoyer d'en-têtes HTTP, et une CSP
+     en <meta> ne gère pas frame-ancestors (empêcher l'affichage du site dans
+     une iframe d'un autre site) ni les rapports de violation. Le blog n'ayant
+     ni formulaire ni compte, le risque de « clickjacking » est faible.
+     scripts/verifier-csp.sh vérifie que rien dans le site ne la viole. */}}
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'">
+
+{{/* Politique de référent : quand on suit un lien vers un autre site, le
+     navigateur n'envoie AUCUNE information sur la page d'où l'on vient
+     (par défaut, il enverrait au moins « blog.ange-bonkoski.fr »). Plus
+     discret pour les lecteurs ; le blog n'a pas de statistiques, il ne perd rien. */}}
+<meta name="referrer" content="no-referrer">
 
 {{/* Couleurs du code (générées par scripts/generer-styles-code.sh).
      L'attribut media dit au navigateur quelle feuille appliquer : la

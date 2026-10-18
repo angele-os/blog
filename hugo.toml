@@ -24,6 +24,12 @@ enableRobotsTXT = true
   # Lien « Portfolio » du pied de page.
   portfolio = "https://ange-bonkoski.fr/"
 
+# Licence des textes et images des articles (détails : LICENSE-CONTENU).
+# Affichée dans le pied de page et dans les flux RSS.
+[params.licence]
+  nom = "CC BY 4.0"
+  adresse = "https://creativecommons.org/licenses/by/4.0/deed.fr"
+
 # Image d'aperçu par défaut quand on partage un lien du blog (LinkedIn,
 # Discord…). Un article peut avoir la sienne : champ « image » du front matter.
 [params.partage]

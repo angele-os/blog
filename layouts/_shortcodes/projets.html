@@ -10,7 +10,8 @@
   {{ range . }}
   <li class="carte verre">
     <h3>
-      <a href="{{ .adresse }}">
+      {{/* Lien vers un autre site : voir layouts/_markup/render-link.html. */}}
+      <a href="{{ .adresse }}" rel="noopener noreferrer">
         {{ .nom }}
         {{/* La flèche montre visuellement un lien vers un autre site ;
              les lecteurs d'écran entendent « (autre site) » à la place. */}}
