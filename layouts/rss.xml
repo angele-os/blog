@@ -1,0 +1,62 @@
+{{- /*
+  Gabarit de TOUS les flux RSS du blog :
+    /index.xml          tout le blog (journal + write-ups)
+    /journal/index.xml  un flux par section
+    /tags/hugo/index.xml un flux par tag
+  Chaque article y est COMPLET : on peut le lire dans son lecteur de flux
+  (Feedly, Thunderbird…) sans venir sur le site.
+  Format : RSS 2.0.
+*/ -}}
+
+{{- /* Les articles du flux. Sur l'accueil, le modèle de Hugo prendrait
+       toutes les pages (« À propos » compris) : on garde seulement les
+       deux sections d'articles. Ailleurs, les articles de la page. */ -}}
+{{- $pages := .Pages -}}
+{{- if .IsHome }}{{ $pages = where site.RegularPages "Section" "in" (slice "journal" "writeups") }}{{ end -}}
+{{- /* Nombre maximum d'articles : [services.rss] limit dans hugo.toml. */ -}}
+{{- with site.Config.Services.RSS.Limit }}{{ if ge . 1 }}{{ $pages = first . $pages }}{{ end }}{{ end -}}
+
+{{- /* Titre du flux : « Blog d'Ange Bonkoski », « Journal — Blog… », « #hugo — Blog… ». */ -}}
+{{- $titre := site.Title -}}
+{{- if eq .Kind "section" }}{{ $titre = printf "%s — %s" .Title site.Title }}{{ end -}}
+{{- if eq .Kind "term" }}{{ $titre = printf "#%s — %s" .Title site.Title }}{{ end -}}
+
+{{- /* Format de date imposé par RSS, ex. « Sun, 18 Oct 2026 00:00:00 +0000 ». */ -}}
+{{- $formatDate := "Mon, 02 Jan 2006 15:04:05 -0700" -}}
+{{- /* Adresse du site sans « / » final, pour fabriquer des liens complets. */ -}}
+{{- $racine := strings.TrimSuffix "/" site.BaseURL -}}
+
+{{- printf "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" | safeHTML }}
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{{ $titre }}</title>
+    <link>{{ .Permalink }}</link>
+    <description>{{ with .Params.summary }}{{ . }}{{ else }}{{ site.Params.description }}{{ end }}</description>
+    <language>fr</language>
+    {{- with $pages }}
+    <lastBuildDate>{{ (index . 0).Date.Format $formatDate }}</lastBuildDate>
+    {{- end }}
+    {{- /* Adresse du flux lui-même (recommandé par les validateurs RSS). */}}
+    {{- with .OutputFormats.Get "rss" }}
+    <atom:link href="{{ .Permalink }}" rel="self" type="application/rss+xml"/>
+    {{- end }}
+    {{- range $pages }}
+    <item>
+      <title>{{ .Title }}</title>
+      <link>{{ .Permalink }}</link>
+      <pubDate>{{ .Date.Format $formatDate }}</pubDate>
+      <guid>{{ .Permalink }}</guid>
+      {{- range .GetTerms "tags" }}
+      <category>{{ .LinkTitle }}</category>
+      {{- end }}
+      {{- /* Le contenu complet. Dans un lecteur de flux, un lien « /tags/hugo/ »
+             ne mène nulle part : on rend les liens et images absolus
+             (https://blog.ange-bonkoski.fr/tags/hugo/), et les liens vers un
+             titre (#…) pointent vers l'article. Puis on « échappe » le HTML
+             (< devient &lt;…) pour qu'il ne casse pas le XML du flux. */}}
+      {{- $contenu := .Content | replaceRE `(href|src)="/` (printf `$1="%s/` $racine) | replaceRE `href="#` (printf `href="%s#` .Permalink) }}
+      <description>{{ $contenu | transform.XMLEscape | safeHTML }}</description>
+    </item>
+    {{- end }}
+  </channel>
+</rss>

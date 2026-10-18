@@ -43,15 +43,33 @@
      à l'affichage. crossorigin est obligatoire pour les polices. */}}
 <link rel="preload" href="{{ "fonts/instrument-sans-latin-standard-normal.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
 
-{{/* Titre de l'onglet : « Article — Blog » ou juste le nom du site à l'accueil. */}}
-<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} — {{ site.Title }}{{ end }}</title>
+{{/* Icône de l'onglet (SVG : nette à toutes les tailles) et icône utilisée
+     par iPhone/iPad quand on ajoute le site à l'écran d'accueil (PNG 180×180). */}}
+<link rel="icon" href="{{ "img/favicon.svg" | relURL }}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ "img/apple-touch-icon.png" | relURL }}">
+
+{{/* Titre de l'onglet : « Article — Blog » ou juste le nom du site à l'accueil.
+     La page 404 a son propre titre (sinon Hugo mettrait « 404 Page not found »). */}}
+{{ $titre := .Title }}
+{{ if eq .Kind "404" }}{{ $titre = "Page introuvable" }}{{ end }}
+<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ $titre }} — {{ site.Title }}{{ end }}</title>
 
 {{/* Description : le résumé de la page s'il existe, sinon celle du site. */}}
 <meta name="description" content="{{ with .Summary }}{{ . | plainify }}{{ else }}{{ site.Params.description }}{{ end }}">
 <meta name="author" content="{{ site.Params.auteur }}">
 
-{{/* Adresse officielle de la page, pour éviter les doublons dans les moteurs. */}}
-<link rel="canonical" href="{{ .Permalink }}">
+{{ if eq .Kind "404" }}
+  {{/* Page d'erreur : les moteurs de recherche ne doivent pas l'indexer.
+       Pas de lien canonique ni d'aperçu de partage : elle n'a pas d'adresse
+       propre (GitHub Pages l'affiche pour toute adresse inconnue). */}}
+  <meta name="robots" content="noindex">
+{{ else }}
+  {{/* Adresse officielle de la page, pour éviter les doublons dans les moteurs. */}}
+  <link rel="canonical" href="{{ .Permalink }}">
+
+  {{/* Aperçu affiché quand on partage un lien (LinkedIn, Discord, X…). */}}
+  {{ partial "partage.html" . }}
+{{ end }}
 
 {{/* Annonce le flux RSS aux lecteurs de flux, s'il existe pour cette page. */}}
 {{ with .OutputFormats.Get "rss" }}

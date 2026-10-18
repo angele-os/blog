@@ -24,6 +24,21 @@ enableRobotsTXT = true
   # Lien « Portfolio » du pied de page.
   portfolio = "https://ange-bonkoski.fr/"
 
+# Image d'aperçu par défaut quand on partage un lien du blog (LinkedIn,
+# Discord…). Un article peut avoir la sienne : champ « image » du front matter.
+[params.partage]
+  image = "/img/og-image.png"
+  # Texte alternatif : décrit l'image pour qui ne la voit pas.
+  alt = "Ange Bonkoski — Réseaux, systèmes et cybersécurité"
+  largeur = 1200
+  hauteur = 630
+
+# Pages produites pour chaque type de page. On retire le flux RSS de la
+# page /tags/ : il listerait des tags, pas des articles. Les flux de
+# chaque tag (/tags/hugo/index.xml) restent.
+[outputs]
+  taxonomy = ["html"]
+
 # Pagination des listes (/journal/, /writeups/, pages de tags) :
 # 10 articles par page, les suivantes à /journal/page/2/, etc.
 [pagination]

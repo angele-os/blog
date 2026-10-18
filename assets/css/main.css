@@ -527,6 +527,23 @@ body::before {
 }
 .vide { color: var(--ink-3); font-style: italic; }
 
+/* Bloc de liens de la page 404 : du verre comme les cartes, mais sans
+   l'effet de survol (il contient plusieurs liens, pas un seul). */
+.bloc-404 {
+  margin-top: 2rem;
+  padding: 1.4rem 1.6rem 1.5rem;
+  border-radius: var(--r-lg);
+}
+.bloc-404 h2 {
+  margin: 0 0 .6rem;
+  font-size: 1.25rem;
+  font-stretch: 88%;
+  letter-spacing: -.015em;
+}
+.bloc-404 ul { margin: 0; padding-left: 1.2rem; }
+.bloc-404 li { margin: .35rem 0; }
+.bloc-404 li::marker { color: var(--accent); }
+
 /* 10. ARTICLE (LECTURE) -------------------------------------------------------
    Le cœur du blog. Pas de verre ici : du texte net sur un fond calme.
    Largeur limitée à ~70 caractères pour que l'œil retrouve facilement

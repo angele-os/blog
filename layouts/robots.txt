@@ -1,0 +1,10 @@
+{{- /*
+  robots.txt : consignes pour les robots des moteurs de recherche.
+  Hugo le produit car enableRobotsTXT = true dans hugo.toml.
+  Ici : tout le site peut être indexé, et on indique où se trouve le plan
+  du site (sitemap.xml), la liste de toutes les pages publiées.
+*/ -}}
+User-agent: *
+Allow: /
+
+Sitemap: {{ "sitemap.xml" | absURL }}

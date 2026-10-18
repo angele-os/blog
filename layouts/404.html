@@ -1,0 +1,26 @@
+{{/*
+  Page d'erreur 404 (« page introuvable »).
+  Hugo la produit en /404.html ; GitHub Pages l'affiche automatiquement
+  pour toute adresse qui n'existe pas. Elle peut donc s'afficher à
+  n'importe quelle adresse : tous ses liens sont absolus (« / » au début),
+  ce que RelPermalink fournit.
+*/}}
+{{ define "main" }}
+<h1>Page introuvable</h1>
+<div class="intro">
+  <p>Cette page n'existe pas, ou plus. L'adresse contient peut-être une faute
+  de frappe, ou l'article a été déplacé.</p>
+</div>
+
+{{/* Bloc de verre (comme les cartes), mais pas une carte cliquable :
+     il contient plusieurs liens, d'où sa propre classe .bloc-404. */}}
+<nav class="verre bloc-404" aria-labelledby="titre-404">
+  <h2 id="titre-404">Où aller ?</h2>
+  <ul>
+    <li><a href="{{ site.Home.RelPermalink }}">L'accueil et les derniers articles</a></li>
+    {{ with site.GetPage "/journal" }}<li><a href="{{ .RelPermalink }}">Le journal du homelab</a></li>{{ end }}
+    {{ with site.GetPage "/writeups" }}<li><a href="{{ .RelPermalink }}">Les write-ups</a></li>{{ end }}
+    {{ with site.GetPage "/tags" }}<li><a href="{{ .RelPermalink }}">Tous les tags</a></li>{{ end }}
+  </ul>
+</nav>
+{{ end }}

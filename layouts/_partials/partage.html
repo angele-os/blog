@@ -1,0 +1,58 @@
+{{/*
+  Balises d'aperçu de partage, lues par LinkedIn, Discord, Facebook,
+  Mastodon (protocole « Open Graph », préfixe og:) et X/Twitter (twitter:).
+  Elles ne chargent rien : ce sont juste des informations sur la page.
+  Appelé par head.html avec la page.
+*/}}
+{{ $titre := cond .IsHome site.Title .Title }}
+{{ $description := site.Params.description }}
+{{ with .Summary }}{{ $description = . | plainify }}{{ end }}
+
+{{/* Image : celle de l'article si son front matter contient « image »
+     (chemin depuis static/, ex. "/img/articles/mon-image.png"), sinon
+     l'image par défaut définie dans hugo.toml ([params.partage]). */}}
+{{ $defaut := site.Params.partage }}
+{{ $image := $defaut.image }}
+{{ $imageAlt := $defaut.alt }}
+{{ $imageParDefaut := true }}
+{{ with .Params.image }}
+  {{ $image = . }}
+  {{ $imageAlt = $.Params.image_alt | default $titre }}
+  {{ $imageParDefaut = false }}
+{{ end }}
+{{/* Les plateformes exigent une adresse complète (https://…). */}}
+{{ $image = $image | absURL }}
+
+<meta property="og:site_name" content="{{ site.Title }}">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:title" content="{{ $titre }}">
+<meta property="og:description" content="{{ $description }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:image" content="{{ $image }}">
+<meta property="og:image:alt" content="{{ $imageAlt }}">
+{{/* Dimensions connues seulement pour l'image par défaut : elles aident les
+     plateformes à afficher l'aperçu sans attendre de télécharger l'image. */}}
+{{ if $imageParDefaut }}
+<meta property="og:image:width" content="{{ $defaut.largeur }}">
+<meta property="og:image:height" content="{{ $defaut.hauteur }}">
+{{ end }}
+
+{{/* Un article (page d'une section) est de type « article », avec ses
+     dates et ses tags ; tout le reste (accueil, listes) est un « website ». */}}
+{{ if and .IsPage .Section }}
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+<meta property="article:author" content="{{ site.Params.auteur }}">
+{{ range .GetTerms "tags" }}<meta property="article:tag" content="{{ .LinkTitle }}">
+{{ end }}
+{{ else }}
+<meta property="og:type" content="website">
+{{ end }}
+
+{{/* X/Twitter : « summary_large_image » = grande image au-dessus du titre. */}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $titre }}">
+<meta name="twitter:description" content="{{ $description }}">
+<meta name="twitter:image" content="{{ $image }}">
+<meta name="twitter:image:alt" content="{{ $imageAlt }}">
