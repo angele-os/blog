@@ -1,0 +1,31 @@
+# Dependabot : propose automatiquement (par pull request) les mises à jour
+# des actions GitHub utilisées dans .github/workflows/.
+# Comme les actions sont épinglées par SHA, Dependabot remplace le SHA ET le
+# commentaire de version (« # v7.0.1 ») dans la même PR. La PR passe par la
+# même vérification que tout le reste avant d'être fusionnée.
+#
+# Non suivis par Dependabot : Hugo et gitleaks (variables HUGO_VERSION et
+# GITLEAKS_VERSION du workflow), à mettre à jour à la main.
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    # N'est proposée qu'une version publiée depuis au moins 14 jours : une
+    # version piégée ou défectueuse est en général retirée avant.
+    cooldown:
+      default-days: 14
+    # Toutes les mises à jour d'actions dans une seule PR.
+    groups:
+      actions:
+        patterns:
+          - "*"
+    # Messages de commit au format Conventional Commits : « chore(ci): … ».
+    commit-message:
+      prefix: chore(ci)
+    open-pull-requests-limit: 5

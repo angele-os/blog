@@ -81,7 +81,7 @@ printf 'Un texte tout à fait normal.\n'                          > "$n/texte-no
 # Fichier d'exceptions d'essai : les vraies exceptions + un « texte ».
 exceptions="$essai/exceptions.txt"
 cp "$racine/scripts/fuites-exceptions.txt" "$exceptions"
-printf 'texte  ghp_EXEMPLE   # jeton d’exemple de la documentation\n' >> "$exceptions"
+printf "texte  ghp_EXEMPLE   # jeton d'exemple de la documentation\n" >> "$exceptions"
 
 # Lancement sur les deux dossiers d'essai.
 sortie="$(FUITES_EXCEPTIONS="$exceptions" bash "$racine/scripts/verifier-fuites.sh" "$d" "$n" 2>&1)"

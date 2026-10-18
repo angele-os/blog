@@ -1,0 +1,158 @@
+# Construction, vérifications et publication du blog.
+#
+# À chaque push (toutes les branches) et à chaque pull request, GitHub lance
+# une machine Linux neuve qui :
+#   1. installe Hugo extended et gitleaks, en versions épinglées et vérifiées ;
+#   2. lance les garde-fous sur les sources (fuites, EXIF, gitleaks) ;
+#   3. construit le site, puis vérifie la CSP, l'accessibilité et les liens.
+# Sur la branche main uniquement, si tout est vert, le site est publié sur
+# GitHub Pages (déploiement officiel par Actions).
+#
+# Sécurité de ce fichier :
+#   - chaque action externe est épinglée par l'empreinte (SHA) de son commit,
+#     pas par une étiquette (« v7 ») qui pourrait être déplacée vers du code
+#     malveillant ; le commentaire en fin de ligne indique la version ;
+#   - permissions minimales : aucune par défaut, puis seulement ce qu'il faut
+#     à chaque tâche ;
+#   - les variables sont lues dans les scripts via $VARIABLE (environnement),
+#     jamais copiées dans le code par ${{ }} : un nom de branche piégé ne
+#     peut donc pas injecter de commande.
+# Les actions sont mises à jour par Dependabot (.github/dependabot.yml).
+
+name: Site
+
+on:
+  push:
+  pull_request:
+  # Bouton « Run workflow » dans l'onglet Actions, pour relancer à la main.
+  workflow_dispatch:
+
+# Aucune permission par défaut ; chaque tâche demande les siennes.
+permissions: {}
+
+# Si on pousse deux fois de suite sur une branche, la première vérification
+# (devenue inutile) est annulée. Sur main, on laisse finir : on ne veut pas
+# interrompre une publication.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+env:
+  # Hugo : même version que sur le PC (commande « hugo version »).
+  # Pour changer de version : nouvelle version ici, et nouvelle somme de
+  # contrôle, à prendre dans le fichier hugo_X.Y.Z_checksums.txt de la page
+  # https://github.com/gohugoio/hugo/releases (ligne hugo_extended_…_linux-amd64.tar.gz).
+  HUGO_VERSION: "0.168.0"
+  HUGO_SHA256: "787f100057328824f38c6ad7c87ff10d6451ae0a7bc39cedaad0dd2bcde17e53"
+  # gitleaks : recherche de secrets dans tout l'historique Git.
+  # Somme de contrôle : fichier gitleaks_X.Y.Z_checksums.txt de
+  # https://github.com/gitleaks/gitleaks/releases (ligne …_linux_x64.tar.gz).
+  GITLEAKS_VERSION: "8.30.1"
+  GITLEAKS_SHA256: "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb"
+
+jobs:
+  verifier:
+    name: Construire et vérifier
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read          # lire le dépôt, rien d'autre
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Tout l'historique : gitleaks vérifie aussi les anciens commits
+          # (un secret supprimé reste lisible dans l'historique).
+          fetch-depth: 0
+          # Ne pas laisser le jeton GitHub sur la machine après la récupération.
+          persist-credentials: false
+
+      - name: Installer Hugo extended (version épinglée et vérifiée)
+        run: |
+          archive="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
+          curl -fsSL -o "$RUNNER_TEMP/$archive" \
+            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${archive}"
+          # Arrêt immédiat si le fichier téléchargé n'est pas exactement celui attendu.
+          echo "${HUGO_SHA256}  $RUNNER_TEMP/$archive" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/hugo"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/hugo" hugo
+          # Rend la commande « hugo » disponible pour les étapes suivantes.
+          echo "$RUNNER_TEMP/hugo" >> "$GITHUB_PATH"
+
+      - name: Installer gitleaks (version épinglée et vérifiée)
+        run: |
+          archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -fsSL -o "$RUNNER_TEMP/$archive" \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${archive}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$archive" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/gitleaks"
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP/gitleaks" gitleaks
+          echo "$RUNNER_TEMP/gitleaks" >> "$GITHUB_PATH"
+
+      - name: Afficher les versions
+        run: |
+          hugo version
+          gitleaks version
+
+      # --- Garde-fous sur les sources -------------------------------------
+      - name: Tester les garde-fous eux-mêmes
+        run: bash scripts/tester-garde-fous.sh
+
+      - name: Chercher les fuites (IP, jetons, clés, webhooks)
+        run: bash scripts/verifier-fuites.sh
+
+      - name: Chercher les métadonnées d'images (EXIF, XMP)
+        run: bash scripts/verifier-exif.sh
+
+      - name: Chercher des secrets dans tout l'historique (gitleaks)
+        # --redact : un secret trouvé n'est pas recopié dans le journal (public).
+        run: gitleaks git --redact --no-banner --verbose .
+
+      # --- Construction ---------------------------------------------------------
+      - name: Construire le site
+        env:
+          HUGO_ENVIRONMENT: production
+        # --gc : nettoie les fichiers inutilisés ; --minify : compresse le HTML,
+        # le CSS et le XML. Les brouillons (draft: true) ne sont pas construits.
+        run: hugo --gc --minify
+
+      # --- Vérifications du site construit ---------------------------------
+      - name: Vérifier le respect de la CSP
+        run: bash scripts/verifier-csp.sh
+
+      - name: Vérifier l'accessibilité de base
+        run: bash scripts/verifier-accessibilite.sh
+
+      - name: Vérifier les liens internes
+        run: bash scripts/verifier-liens.sh
+
+      # --- Préparation de la publication (main uniquement) -------------------
+      - name: Préparer le site pour GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: public
+
+  deployer:
+    name: Publier sur GitHub Pages
+    # Seulement si la vérification a réussi, et seulement sur main.
+    needs: verifier
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write            # publier sur GitHub Pages
+      id-token: write         # prouver à GitHub Pages que la demande vient de ce workflow
+    # L'environnement « github-pages » affiche l'adresse du site dans GitHub,
+    # et peut être limité à la branche main (Settings > Environments).
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    # Une seule publication à la fois, jamais interrompue en cours.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Publier
+        id: deploiement
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

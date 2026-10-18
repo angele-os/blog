@@ -23,7 +23,28 @@ bash scripts/verifier-fuites.sh   # IP, jetons, clés, webhooks
 bash scripts/verifier-exif.sh     # métadonnées EXIF / XMP des images
 hugo --gc --minify && bash scripts/verifier-csp.sh   # respect de la CSP
 bash scripts/verifier-accessibilite.sh               # titres, alt, langue… (après hugo)
+bash scripts/verifier-liens.sh                       # liens internes (après hugo)
 ```
+
+## Publication
+
+Le workflow [.github/workflows/site.yml](.github/workflows/site.yml) tourne à
+chaque push et pull request : il installe Hugo extended et gitleaks (versions
+épinglées, sommes de contrôle vérifiées), lance tous les garde-fous, construit
+le site et vérifie la CSP, l'accessibilité et les liens. Sur `main`, si tout
+est vert, il publie le site sur GitHub Pages.
+
+Les actions sont épinglées par SHA et mises à jour par Dependabot
+([.github/dependabot.yml](.github/dependabot.yml)). Hugo et gitleaks se
+mettent à jour à la main, dans les variables en tête du workflow.
+
+Réglages GitHub (une seule fois) :
+
+- **Settings → Pages** : Source « GitHub Actions » ; domaine personnalisé
+  `blog.ange-bonkoski.fr` ; « Enforce HTTPS ».
+- **DNS** du domaine : enregistrement `CNAME` de `blog` vers `angele-os.github.io`.
+- **Settings → Environments → github-pages** : déploiement limité à la branche `main`.
+- **Settings → Rules** : sur `main`, exiger que « Construire et vérifier » réussisse.
 
 ## Sécurité
 
