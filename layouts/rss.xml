@@ -54,7 +54,7 @@
       {{- end }}
       {{- /* Le contenu complet. Dans un lecteur de flux, un lien « /tags/hugo/ »
              ne mène nulle part : on rend les liens et images absolus
-             (https://blog.ange-bonkoski.fr/tags/hugo/), et les liens vers un
+             (https://journal.ange-bonkoski.fr/tags/hugo/), et les liens vers un
              titre (#…) pointent vers l'article. Puis on « échappe » le HTML
              (< devient &lt;…) pour qu'il ne casse pas le XML du flux. */}}
       {{- $contenu := .Content | replaceRE `(href|src)="/` (printf `$1="%s/` $racine) | replaceRE `href="#` (printf `href="%s#` .Permalink) }}

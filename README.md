@@ -1,6 +1,6 @@
 # blog
 
-Code source de <https://blog.ange-bonkoski.fr/> : le journal de mon homelab et
+Code source de <https://journal.ange-bonkoski.fr/> : le journal de mon homelab et
 mes write-ups de labs de cybersécurité.
 
 Site statique construit avec [Hugo](https://gohugo.io/) (édition extended),
@@ -41,7 +41,7 @@ mettent à jour à la main, dans les variables en tête du workflow.
 Réglages GitHub (une seule fois) :
 
 - **Settings → Pages** : Source « GitHub Actions » ; domaine personnalisé
-  `blog.ange-bonkoski.fr` ; « Enforce HTTPS ».
+  `journal.ange-bonkoski.fr` ; « Enforce HTTPS ».
 - **DNS** du domaine : enregistrement `CNAME` de `blog` vers `angele-os.github.io`.
 - **Settings → Environments → github-pages** : déploiement limité à la branche `main`.
 - **Settings → Rules** : sur `main`, exiger que « Construire et vérifier » réussisse.

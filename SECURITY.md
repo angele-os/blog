@@ -6,7 +6,7 @@ et traité.
 
 ## Ce qui est concerné
 
-- le site <https://blog.ange-bonkoski.fr/> et le code de ce dépôt (gabarits,
+- le site <https://journal.ange-bonkoski.fr/> et le code de ce dépôt (gabarits,
   scripts, configuration, workflows GitHub Actions) ;
 - **une information sensible publiée par erreur** dans un article : adresse IP,
   nom de machine, capture d'écran révélant une configuration, métadonnées

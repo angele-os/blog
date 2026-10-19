@@ -3,7 +3,7 @@
 
 # Adresse publique du site : Hugo s'en sert pour fabriquer les liens absolus
 # (lien canonique, flux RSS). Le « / » final est obligatoire.
-baseURL = "https://blog.ange-bonkoski.fr/"
+baseURL = "https://journal.ange-bonkoski.fr/"
 title = "Blog d'Ange Bonkoski"
 
 # Le site est uniquement en français.

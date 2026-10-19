@@ -10,7 +10,7 @@ Blog statique d'Ange Bonkoski, étudiant en BUT Informatique parcours DACS
 - **journal** : récits du homelab (serveur ZimaOS auto-hébergé) ;
 - **writeups** : write-ups de labs de cybersécurité.
 
-En ligne sur https://blog.ange-bonkoski.fr/ (GitHub Pages, déployé par GitHub Actions).
+En ligne sur https://journal.ange-bonkoski.fr/ (GitHub Pages, déployé par GitHub Actions).
 Langue du site : français uniquement.
 
 ## Comment on travaille
