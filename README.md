@@ -42,7 +42,7 @@ Réglages GitHub (une seule fois) :
 
 - **Settings → Pages** : Source « GitHub Actions » ; domaine personnalisé
   `journal.ange-bonkoski.fr` ; « Enforce HTTPS ».
-- **DNS** du domaine : enregistrement `CNAME` de `blog` vers `angele-os.github.io`.
+- **DNS** du domaine : enregistrement `CNAME` de `journal` vers `angele-os.github.io`.
 - **Settings → Environments → github-pages** : déploiement limité à la branche `main`.
 - **Settings → Rules** : sur `main`, exiger que « Construire et vérifier » réussisse.
 
