@@ -7,6 +7,13 @@ Site statique construit avec [Hugo](https://gohugo.io/) (édition extended),
 avec un thème écrit à la main : aucun JavaScript, aucune ressource externe,
 une politique de sécurité du contenu (CSP) stricte.
 
+L'interface reprend l'identité « le fil » de mon
+[portfolio](https://ange-bonkoski.fr/), partagée avec net-toolkit et le
+simulateur BUT : papier gris, encre, titres en Newsreader et un câble orange
+comme seul accent. Ici, le câble relie les articles d'une liste et s'allonge
+en haut de l'écran pendant la lecture d'un article. Modes clair et sombre
+automatiques.
+
 ## Lancer le site en local
 
 ```bash
@@ -54,7 +61,7 @@ Pour signaler un problème, voir [SECURITY.md](SECURITY.md).
 
 - **Articles** (textes et images de `content/`) : [CC BY 4.0](LICENSE-CONTENU)
 - **Code** : [MIT](LICENSE)
-- **Police** Instrument Sans : [SIL OFL 1.1](static/fonts/OFL.txt)
+- **Polices** Newsreader, Instrument Sans et IBM Plex Mono : [SIL OFL 1.1](static/fonts/OFL.txt)
 - **Logo, favicon et image de partage** : tous droits réservés
 
 Le détail est en tête du fichier [LICENSE-CONTENU](LICENSE-CONTENU).

@@ -1,4 +1,14 @@
+Ce fichier vaut pour les trois polices de ce dossier, chacune sous licence
+SIL Open Font License 1.1 et utilisée telle quelle, sans modification :
+
+Instrument Sans (instrument-sans-*.woff2)
 Copyright 2022 The Instrument Sans Project Authors (https://github.com/Instrument/instrument-sans)
+
+Newsreader (newsreader-*.woff2)
+Copyright 2020 The Newsreader Project Authors (https://github.com/productiontype/Newsreader)
+
+IBM Plex Mono (ibm-plex-mono-*.woff2)
+Copyright © 2017 IBM Corp. with Reserved Font Name "Plex"
 
 This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:

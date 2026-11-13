@@ -11,15 +11,15 @@
                    les lecteurs d'écran qui naviguent de titre en titre :
                    sous le <h1> d'une page de liste -> <h2> ;
                    sous le <h2> « Derniers articles » de l'accueil -> 3.
-  Chaque article est une carte de verre entièrement cliquable
-  (main.css, partie 9).
+  Les articles sont branchés l'un sous l'autre sur un même câble : chaque
+  entrée est entièrement cliquable (main.css, partie 9).
 */}}
 {{ $afficherType := .afficherType }}
 {{ $niveau := .niveau | default 2 }}
 {{ with .pages }}
 <ul class="liste-articles">
   {{ range . }}
-  <li class="carte verre">
+  <li class="carte">
     <article>
       {{/* Hugo n'accepte pas une variable dans un nom de balise (<h{{ … }}>) :
            on écrit donc les deux cas. */}}

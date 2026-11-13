@@ -3,28 +3,54 @@
   derniers articles, journal et write-ups mélangés.
 */}}
 {{ define "main" }}
-<h1>{{ site.Title }}</h1>
-<div class="intro">
-  {{ .Content }}
-  {{ with site.GetPage "/a-propos" }}
-  {{/* Flèches décoratives : aria-hidden évite qu'un lecteur d'écran lise
-       « flèche droite » à la fin du lien. */}}
-  <p><a href="{{ .RelPermalink }}">En savoir plus sur moi <span aria-hidden="true">→</span></a></p>
-  {{ end }}
-</div>
-
 {{/* site.RegularPages : tous les articles du site (pas les pages de liste),
      déjà triés du plus récent au plus ancien. On garde ceux des deux
-     sections, puis les 5 premiers. */}}
+     sections ; plus bas, on n'affiche que les 5 premiers. */}}
 {{ $articles := where site.RegularPages "Section" "in" (slice "journal" "writeups") }}
+
+{{/* Le haut de page : le titre à gauche, la prise réseau à droite. Le câble
+     orange descend de la prise et souligne le titre (main.css, partie 7). */}}
+<div class="hero">
+  <div class="hero-haut">
+    {{/* L'adresse du blog, lue dans baseURL (hugo.toml). */}}
+    <p class="surtitre">{{ (urls.Parse site.BaseURL).Host }}</p>
+    <h1>{{ site.Title }}</h1>
+
+    {{/* À côté de la prise : le nombre d'articles en ligne et la date du
+         dernier, calculés par Hugo à chaque construction. */}}
+    <div class="etat">
+      {{ partial "prise.html" . }}
+      <div class="etat-texte">
+        {{ $nombre := len $articles }}
+        <p class="etat-titre">{{ $nombre }} article{{ if gt $nombre 1 }}s{{ end }} en ligne</p>
+        {{ with index $articles 0 }}
+        <p class="etat-detail">dernier le <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date | time.Format ":date_long" }}</time></p>
+        {{ end }}
+      </div>
+    </div>
+
+    {{/* Le câble : purement décoratif. */}}
+    <div class="fil" aria-hidden="true"><span class="fil-bout"></span></div>
+  </div>
+
+  <div class="intro">
+    {{ .Content }}
+    {{ with site.GetPage "/a-propos" }}
+    {{/* Flèches décoratives : aria-hidden évite qu'un lecteur d'écran lise
+         « flèche droite » à la fin du lien. */}}
+    <p><a class="lien-fleche" href="{{ .RelPermalink }}">En savoir plus sur moi <span aria-hidden="true">→</span></a></p>
+    {{ end }}
+  </div>
+</div>
+
 <section class="bloc-section" aria-labelledby="derniers-articles">
   <h2 id="derniers-articles">Derniers articles</h2>
   {{ partial "liste-articles.html" (dict "pages" (first 5 $articles) "afficherType" true "niveau" 3) }}
 
   {{/* Liens vers les listes complètes de chaque section. */}}
   <ul class="liens-sections">
-    {{ with site.GetPage "/journal" }}<li><a href="{{ .RelPermalink }}">Tout le journal <span aria-hidden="true">→</span></a></li>{{ end }}
-    {{ with site.GetPage "/writeups" }}<li><a href="{{ .RelPermalink }}">Tous les write-ups <span aria-hidden="true">→</span></a></li>{{ end }}
+    {{ with site.GetPage "/journal" }}<li><a class="lien-fleche" href="{{ .RelPermalink }}">Tout le journal <span aria-hidden="true">→</span></a></li>{{ end }}
+    {{ with site.GetPage "/writeups" }}<li><a class="lien-fleche" href="{{ .RelPermalink }}">Tous les write-ups <span aria-hidden="true">→</span></a></li>{{ end }}
   </ul>
 </section>
 {{ end }}

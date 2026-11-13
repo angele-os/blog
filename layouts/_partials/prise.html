@@ -1,0 +1,19 @@
+{{/*
+  Dessin de la prise réseau (RJ45) d'où part le câble orange : la signature
+  visuelle partagée avec le portfolio, net-toolkit et le simulateur.
+  Appelé par home.html et 404.html : {{ partial "prise.html" . }}
+  Décoratif : aria-hidden le cache aux lecteurs d'écran. Dessiné en SVG dans
+  la page (aucun fichier externe) ; ses couleurs sont dans main.css, partie 7
+  (la CSP interdit les styles en ligne).
+*/}}
+<svg class="prise" viewBox="0 0 60 116" aria-hidden="true" focusable="false">
+  <rect class="prise-boitier" x="3" y="2" width="54" height="46" rx="7"/>
+  <rect class="prise-trou" x="14" y="24" width="32" height="24" rx="2"/>
+  <circle class="prise-voyant-eteint" cx="14" cy="13" r="3.2"/>
+  <circle class="prise-voyant" cx="46" cy="13" r="3.2"/>
+  <rect class="prise-fiche" x="17" y="29" width="26" height="46" rx="2.5"/>
+  <path class="prise-contacts" d="M21 32v9M23.6 32v9M26.2 32v9M28.8 32v9M31.4 32v9M34 32v9M36.6 32v9M39.2 32v9"/>
+  <rect class="prise-languette" x="25" y="50" width="10" height="17" rx="1.5"/>
+  <path class="prise-manchon" d="M17 75h26l-6.5 39h-13z"/>
+  <path class="prise-stries" d="M19.5 84h21M21 93h18M22.5 102h15"/>
+</svg>

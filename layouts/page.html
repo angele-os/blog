@@ -2,8 +2,15 @@
   Une page seule : un article du journal, un write-up, ou « À propos ».
 */}}
 {{ define "main" }}
-<article>
-  <header class="article-entete">
+<article class="article">
+  {{/* .tete : le haut de page, souligné par un tronçon de câble (main.css, partie 8). */}}
+  <header class="tete article-entete">
+    {{/* Au-dessus du titre d'un article : sa section (« Journal »,
+         « Write-up »), qui ramène à la liste. « singulier » est défini
+         dans le _index.md de chaque section. */}}
+    {{ with .CurrentSection }}{{ if $.Section }}
+    <p class="surtitre"><a href="{{ .RelPermalink }}">{{ .Params.singulier | default .Title }}</a></p>
+    {{ end }}{{ end }}
     <h1>{{ .Title }}</h1>
     {{/* Date, temps de lecture, tags… seulement pour les articles, pas pour
          « À propos » (qui n'est dans aucune section, donc .Section est vide). */}}
@@ -15,7 +22,9 @@
   {{/* Sommaire automatique, affiché si :
        - l'article a au moins 2 titres (sinon un sommaire ne sert à rien) ;
        - et le front matter ne contient pas « sommaire: false ».
-       .Fragments.Identifiers : la liste des ancres des titres de l'article. */}}
+       .Fragments.Identifiers : la liste des ancres des titres de l'article.
+       Sur grand écran, il se place à droite du texte et reste visible
+       pendant la lecture (main.css, partie 13). */}}
   {{ if and (ge (len .Fragments.Identifiers) 2) (ne .Params.sommaire false) }}
   <details class="sommaire" open>
     <summary>Sommaire</summary>

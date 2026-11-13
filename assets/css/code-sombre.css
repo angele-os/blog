@@ -1,13 +1,13 @@
-/* Generated using: hugo gen chromastyles --style=modus-vivendi --omitClassComments --lineNumbersInlineStyle=#95A1AB --lineNumbersTableStyle=#95A1AB --highlightStyle=bg:#26323B */
+/* Generated using: hugo gen chromastyles --style=modus-vivendi --omitClassComments --lineNumbersInlineStyle=#9DA19B --lineNumbersTableStyle=#9DA19B --highlightStyle=bg:#2D3238 */
 
 .bg { color:#fff;background-color:#000; }
 .chroma { color:#fff;background-color:#000;-webkit-text-size-adjust:none; }
 .chroma .lnlinks { outline:none;text-decoration:none;color:inherit }
 .chroma .lntd { vertical-align:top;padding:0;margin:0;border:0; }
 .chroma .lntable { border-spacing:0;padding:0;margin:0;border:0; }
-.chroma .hl { background-color:#26323b }
-.chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#95a1ab }
-.chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#95a1ab }
+.chroma .hl { background-color:#2d3238 }
+.chroma .lnt { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#9da19b }
+.chroma .ln { white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#9da19b }
 .chroma .line { display:flex; }
 .chroma .k { color:#b6a0ff }
 .chroma .kc { color:#00bcff }

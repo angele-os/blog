@@ -10,7 +10,8 @@
 # Thèmes choisis : modus-operandi (clair) et modus-vivendi (sombre). Ils sont
 # conçus pour l'accessibilité : toutes leurs couleurs restent lisibles
 # (contraste AA) sur nos fonds de code. Seuls leurs numéros de ligne sont
-# trop pâles : on les remplace par le gris « --ink-3 » du site. Et leur fond
+# trop pâles : on les remplace par le gris « --ink-3 » du site (une valeur par
+mode, voir main.css). Et leur fond
 # de ligne surlignée (option hl_lines) se confondait avec notre fond de code :
 # on le fonce un peu (clair) ou on l'éclaircit (sombre).
 #
@@ -43,5 +44,5 @@ generer() {
   echo "Écrit : $destination/$4 (thème $1)"
 }
 
-generer modus-operandi "#59636D" "#D8E0E3" code-clair.css
-generer modus-vivendi  "#95A1AB" "#26323B" code-sombre.css
+generer modus-operandi "#5C6268" "#D2D3CB" code-clair.css
+generer modus-vivendi  "#9DA19B" "#2D3238" code-sombre.css

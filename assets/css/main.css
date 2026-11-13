@@ -1,27 +1,48 @@
 /* ==========================================================================
    Blog — Ange Bonkoski
-   Même identité que le portfolio v2 (« ardoise et brume ») : fond gris brume,
-   encre presque noire, un seul accent bleu pétrole, police Instrument Sans.
-   Différence avec le portfolio : ici on LIT de longs textes. Le verre liquide
-   est donc réservé à l'en-tête et aux cartes, jamais derrière un article.
+   Identité « le fil », reprise du portfolio (ange-bonkoski.fr) et partagée
+   avec net-toolkit et le simulateur : papier gris chaud, encre presque noire,
+   grands titres serif, un câble orange comme seul accent.
+   Ici, c'est un journal : on LIT de longs textes. Le câble sert donc de fil
+   conducteur — il souligne les titres, relie les articles d'une liste l'un
+   à l'autre, et s'allonge en haut de l'écran à mesure qu'on avance dans un
+   article. Le texte, lui, reste net sur un fond calme.
    Aucun JavaScript : tout est en CSS.
 
    SOMMAIRE (Ctrl+F sur le numéro pour sauter à une partie)
-    1. Police                 7. En-tête              13. Sommaire
-    2. Variables (clair)      8. Mise en page         14. Encadrés Leçon / Attention
-    3. Variables (sombre)     9. Cartes               15. Pied de page
-    4. Base                  10. Article (lecture)    16. Préférences d'accessibilité
-    5. Décor d'ambiance      11. Code                 17. Impression
-    6. Verre liquide         12. Métadonnées et tags
+    1. Polices                8. Hauts de page          15. Pagination et liens
+    2. Variables (clair)      9. Listes d'articles      16. Pied de page
+    3. Variables (sombre)    10. Article (lecture)      17. Fil de lecture
+    4. Base                  11. Code                   18. Apparitions
+    5. En-tête               12. Métadonnées et tags    19. Préférences d'accessibilité
+    6. Mise en page          13. Sommaire               20. Impression
+    7. Accueil, prise, fil   14. Encadrés
    ========================================================================== */
 
-/* 1. POLICE ----------------------------------------------------------------
-   Instrument Sans (licence SIL OFL, voir static/fonts/OFL.txt), servie par
-   le site lui-même : aucune requête vers Google Fonts.
-   Un seul fichier « variable » par style : il contient toutes les graisses
-   (400 à 700) et largeurs (75 % à 100 %), d'où les plages ci-dessous.
+/* 1. POLICES ---------------------------------------------------------------
+   Toutes servies par le site lui-même (licence SIL OFL, voir
+   static/fonts/OFL.txt) : aucune requête vers Google Fonts, et la CSP
+   « font-src 'self' » l'interdirait de toute façon.
+   - Newsreader : les titres (fichier « variable » : toutes les graisses
+     dans un seul fichier), plus une italique.
+   - Instrument Sans : le texte des articles et l'interface.
+   - IBM Plex Mono : le code et les petites informations (dates, tags…).
    font-display:swap : le texte s'affiche tout de suite avec une police
-   système, puis bascule sur Instrument Sans dès qu'elle est chargée. */
+   système, puis bascule sur la bonne dès qu'elle est chargée. */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin-opsz-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Newsreader';
+  font-style: italic;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin-wght-italic.woff2') format('woff2');
+}
 @font-face {
   font-family: 'Instrument Sans';
   font-style: normal;
@@ -38,55 +59,43 @@
   font-display: swap;
   src: url('/fonts/instrument-sans-latin-standard-italic.woff2') format('woff2');
 }
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+}
 
 /* 2. VARIABLES — MODE CLAIR ------------------------------------------------
    Toutes les couleurs du site sont ici. Le mode sombre (partie 3) ne fait
    que changer ces valeurs : le reste du CSS n'a jamais besoin de savoir
    dans quel mode on est.
-   Contrastes vérifiés (norme WCAG AA : au moins 4,5:1 pour le texte),
-   y compris sur les halos et sous le verre. */
+   Contrastes mesurés (norme WCAG AA : au moins 4,5:1 pour le texte),
+   d'abord sur --paper, puis sur --sheet. */
 :root {
   color-scheme: light dark;  /* barres de défilement et champs suivent le thème */
 
   /* Couleurs (reprises du portfolio) */
-  --bg: #EDF0F1;             /* brume */
-  --surface: #FFFFFF;
-  --ink: #14181D;            /* encre : texte principal */
-  --ink-2: #46505A;          /* texte secondaire */
-  --ink-3: #59636D;          /* texte discret (dates…) */
-  --accent: #1D5A66;         /* bleu pétrole : liens */
-  --accent-deep: #143F48;    /* survol des liens */
-  --accent-soft: rgba(29, 90, 102, .10);
-  --accent-line: rgba(29, 90, 102, .30);
-  --line: rgba(20, 24, 29, .09);
-  --line-2: rgba(20, 24, 29, .16);
-  --selection: rgba(29, 90, 102, .18);
-  --actif: rgba(255, 255, 255, .88);   /* fond du lien de menu actif */
-
-  /* Halos d'ambiance (plus discrets que sur le portfolio, pour la lecture) */
-  --halo-1: rgba(29, 90, 102, .10);
-  --halo-2: rgba(84, 112, 150, .12);
-  --halo-3: rgba(205, 190, 166, .30);
-  --halo-4: rgba(110, 170, 180, .16);
-
-  /* Verre */
-  --verre-haut: rgba(255, 255, 255, .58);
-  --verre-bas: rgba(255, 255, 255, .34);
-  --verre-bord: rgba(255, 255, 255, .60);
-  --verre-reflet: rgba(255, 255, 255, .95);  /* arête éclairée en haut */
-  --verre-eclat: rgba(255, 255, 255, .50);   /* lumière venant d'en haut à gauche */
-  --verre-flou: 14px;
-  --ombre-verre:
-    0 1px 1px rgba(20, 24, 29, .04),
-    0 14px 34px -18px rgba(20, 24, 29, .26),
-    0 44px 90px -48px rgba(29, 90, 102, .32);
-  --ombre-survol:
-    0 2px 4px rgba(20, 24, 29, .05),
-    0 24px 48px -24px rgba(20, 24, 29, .32);
+  --paper: #ECEDE8;          /* papier gris : le fond de la page */
+  --sheet: #FAFAF7;          /* feuille posée sur le papier (encadrés, cartes) */
+  --ink: #15181B;            /* encre : texte principal, 15,1:1 et 17,0:1 */
+  --ink-2: #42484E;          /* texte secondaire : 7,9:1 et 8,9:1 */
+  --ink-3: #5C6268;          /* texte discret (dates…) : 5,2:1 et 5,9:1 */
+  --wire: #EE4F1A;           /* le câble : un décor, jamais utilisé pour du texte */
+  --wire-texte: #A5360B;     /* le même orange, assombri pour le texte : 5,6:1 et 6,3:1 */
+  --led: #128A49;            /* voyant de la prise */
+  --led-vif: #1FC46B;        /* le même voyant, au plus fort de sa « respiration » */
+  --contacts: #B98A1F;       /* contacts dorés de la prise */
+  --line: rgba(21, 24, 27, .2);
+  --line-soft: rgba(21, 24, 27, .11);
+  --entete-fond: rgba(236, 237, 232, .9);
+  --ombre-fil: rgba(21, 24, 27, .16);
+  --grain: url('/img/grain.svg');
 
   /* Code : fond des blocs. Les couleurs du code elles-mêmes viennent de
      code-clair.css / code-sombre.css (générés, voir scripts/). */
-  --code-bg: #E2E7E9;
+  --code-bg: #E0E1DA;
 
   /* Encadrés et niveaux de difficulté (texte écrit dans ces couleurs) */
   --attention: #8A4B12;      /* ambre brun */
@@ -94,56 +103,50 @@
   --moyen: #8A4B12;          /* ambre brun */
   --difficile: #A3352B;      /* brique */
 
-  /* Formes et mouvement (repris du portfolio) */
-  --r-xl: 34px; --r-lg: 26px; --r-md: 18px; --r-sm: 12px;
+  /* Formes et mouvement */
+  --r-sm: 6px;
+  --r-md: 12px;
   --ease: cubic-bezier(.16, 1, .3, 1);
 
-  /* Typographie */
-  --sans: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  /* Mise en page */
+  --gouttiere: clamp(1rem, 5vw, 2.5rem);  /* marge sur les côtés de l'écran */
+  --colonne: 44rem;          /* largeur de la colonne de texte d'un article */
+  --large: 66rem;            /* largeur de la page, de l'en-tête et du pied */
   --mesure: 70ch;            /* largeur de ligne idéale pour lire : ~70 caractères */
-  --gouttiere: clamp(1rem, 4vw, 2rem);  /* marge sur les côtés de l'écran */
+  --entete-h: 4.25rem;       /* hauteur de la barre d'en-tête */
+  --prise-l: 44px;           /* largeur de la prise : le câble est centré dessus */
+  --etat-l: 17rem;           /* largeur de la colonne de la prise, sur grand écran */
+
+  /* Typographie */
+  --serif: 'Newsreader', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --sans: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Code', 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
 }
 
 /* 3. VARIABLES — MODE SOMBRE -----------------------------------------------
    Activé automatiquement quand le système (Windows, macOS, téléphone) est en
-   mode sombre. Fond ardoise, encre claire, pétrole éclairci pour rester
-   lisible sur fond foncé. Seules les variables changent. */
+   mode sombre : le papier devient encre, l'encre devient papier. Le câble
+   garde son orange ; seul l'orange du TEXTE est éclairci pour rester lisible
+   sur fond foncé. Seules les variables changent.
+   Contrastes mesurés sur --paper, puis sur --sheet. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0F1417;
-    --surface: #182026;
-    --ink: #E8ECEE;
-    --ink-2: #B3BDC5;
-    --ink-3: #95A1AB;
-    --accent: #7CC0CB;
-    --accent-deep: #A6D7DF;
-    --accent-soft: rgba(124, 192, 203, .12);
-    --accent-line: rgba(124, 192, 203, .35);
-    --line: rgba(255, 255, 255, .09);
-    --line-2: rgba(255, 255, 255, .16);
-    --selection: rgba(124, 192, 203, .28);
-    --actif: rgba(255, 255, 255, .10);
+    --paper: #131517;
+    --sheet: #1C1F23;
+    --ink: #ECEDE8;          /* 15,4:1 et 14,0:1 */
+    --ink-2: #C2C5BF;        /* 10,5:1 et 9,5:1 */
+    --ink-3: #9DA19B;        /* 6,9:1 et 6,3:1 */
+    --wire-texte: #FF9466;   /* 8,3:1 et 7,5:1 */
+    --led: #2FBF74;
+    --led-vif: #43E08A;
+    --contacts: #D2A63E;
+    --line: rgba(236, 237, 232, .24);
+    --line-soft: rgba(236, 237, 232, .12);
+    --entete-fond: rgba(19, 21, 23, .9);
+    --ombre-fil: rgba(0, 0, 0, .5);
+    --grain: url('/img/grain-nuit.svg');
 
-    --halo-1: rgba(29, 90, 102, .30);
-    --halo-2: rgba(84, 112, 150, .20);
-    --halo-3: rgba(205, 190, 166, .08);
-    --halo-4: rgba(110, 170, 180, .12);
-
-    --verre-haut: rgba(38, 48, 58, .62);
-    --verre-bas: rgba(38, 48, 58, .42);
-    --verre-bord: rgba(255, 255, 255, .10);
-    --verre-reflet: rgba(255, 255, 255, .14);
-    --verre-eclat: rgba(255, 255, 255, .06);
-    --ombre-verre:
-      0 1px 1px rgba(0, 0, 0, .20),
-      0 14px 34px -18px rgba(0, 0, 0, .55),
-      0 44px 90px -48px rgba(0, 0, 0, .60);
-    --ombre-survol:
-      0 2px 4px rgba(0, 0, 0, .25),
-      0 24px 48px -24px rgba(0, 0, 0, .70);
-
-    --code-bg: #182026;
+    --code-bg: #1C1F23;
 
     --attention: #E3B37A;
     --facile: #8FCB9F;
@@ -157,14 +160,18 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+  scrollbar-color: var(--ink-3) transparent;
   /* Quand on suit un lien vers un titre (#ancre), on laisse de la place
      pour l'en-tête collant, sinon il cacherait le titre. */
-  scroll-padding-top: 6rem;
+  scroll-padding-top: calc(var(--entete-h) + 1.25rem);
 }
 
 body {
   margin: 0;
-  background: var(--bg);
+  /* Le grain de papier est un petit fichier SVG : la CSP interdit les
+     images intégrées (« data: »). */
+  background: var(--paper) var(--grain);
   color: var(--ink);
   font-family: var(--sans);
   font-size: 1.125rem;       /* 18 px : confortable pour de longs textes */
@@ -173,34 +180,44 @@ body {
   text-rendering: optimizeLegibility;
   /* Le pied de page reste en bas même sur une page très courte */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
+/* Titres : en Newsreader, graisse légère, comme sur le portfolio */
 h1, h2, h3, h4 {
   color: var(--ink);
-  line-height: 1.15;
-  font-weight: 650;
+  font-family: var(--serif);
+  font-weight: 450;
+  line-height: 1.1;
+  letter-spacing: -.02em;
   text-wrap: balance;        /* lignes de titre de longueurs équilibrées */
 }
 p, li { text-wrap: pretty; } /* évite un mot tout seul en dernière ligne */
 strong { font-weight: 650; }
 img { display: block; max-width: 100%; height: auto; }
 
-a { color: var(--accent); text-underline-offset: .18em; }
-a:hover { color: var(--accent-deep); }
+/* Liens : couleur du texte, soulignés par le câble orange */
+a {
+  color: inherit;
+  text-decoration-color: var(--wire);
+  text-decoration-thickness: .09em;
+  text-underline-offset: .2em;
+}
+a:hover { color: var(--wire-texte); }
 
-::selection { background: var(--selection); }
+::selection { background: var(--ink); color: var(--paper); }
 
 /* Contour de focus : visible seulement au clavier, jamais supprimé */
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--wire-texte);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 /* Texte invisible à l'écran mais lu par les lecteurs d'écran
-   (ex. préciser « Tout voir : Journal » au lieu d'un simple « Tout voir »). */
+   (ex. préciser « (autre site) » après un lien externe). */
 .sr-seul {
   position: absolute;
   width: 1px;
@@ -223,271 +240,429 @@ a:hover { color: var(--accent-deep); }
   padding: .7rem 1.2rem;
   border-radius: 999px;
   background: var(--ink);
-  color: var(--bg);
+  color: var(--paper);
   font-weight: 600;
   text-decoration: none;
   transition: top .25s var(--ease);
 }
-.evitement:focus-visible { top: 1rem; color: var(--bg); }
+.evitement:focus-visible { top: 1rem; color: var(--paper); }
 
-/* 5. DÉCOR D'AMBIANCE ------------------------------------------------------
-   Quatre halos colorés très doux, fixes, derrière toute la page. Ils ne
-   servent qu'à donner quelque chose à flouter au verre : sans décor
-   derrière lui, un verre ne se voit pas. Pas d'animation : on lit. */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(60vmax 60vmax at -5% -10%, var(--halo-1), transparent 70%),
-    radial-gradient(45vmax 45vmax at 105% 10%, var(--halo-2), transparent 70%),
-    radial-gradient(55vmax 55vmax at 40% 75%, var(--halo-3), transparent 70%),
-    radial-gradient(40vmax 40vmax at 100% 95%, var(--halo-4), transparent 70%);
+/* Petite ligne d'information au-dessus d'un titre, en mono */
+.surtitre {
+  margin: 0;
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.4;
 }
-
-/* 6. VERRE LIQUIDE ---------------------------------------------------------
-   Même recette que le portfolio, sans la partie JavaScript :
-   - fond blanc translucide en dégradé (plus opaque en haut) ;
-   - backdrop-filter : floute et sature ce qui est derrière ;
-   - ::before : éclat de lumière venant d'en haut à gauche ;
-   - ::after : liseré lumineux sur les bords (l'épaisseur du verre).
-   Classe .verre utilisée UNIQUEMENT par l'en-tête et les cartes. */
-.verre {
-  position: relative;
-  isolation: isolate;        /* garde les reflets ::before derrière le texte */
-  background: linear-gradient(180deg, var(--verre-haut), var(--verre-bas));
-  border: 1px solid var(--verre-bord);
-  -webkit-backdrop-filter: blur(var(--verre-flou)) saturate(170%);
-          backdrop-filter: blur(var(--verre-flou)) saturate(170%);
-  box-shadow:
-    inset 0 1px 0 var(--verre-reflet),
-    var(--ombre-verre);
-}
-.verre::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(110% 70% at 0% 0%, var(--verre-eclat), transparent 55%);
-}
-.verre::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  pointer-events: none;
-  background: linear-gradient(140deg, var(--verre-reflet), transparent 35%, transparent 60%, var(--verre-eclat));
-  /* Le masque ne garde que la bordure de 1 px : on obtient un liseré en dégradé */
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask-composite: exclude;
+/* Quand le surtitre est un lien (« Journal » au-dessus d'un article), on
+   agrandit sa zone cliquable sans changer sa taille à l'écran. */
+.surtitre a {
+  display: inline-block;
+  margin: -.5rem 0;
+  padding: .5rem 0;
 }
 
-/* 7. EN-TÊTE -----------------------------------------------------------------
-   Une pilule de verre qui reste collée en haut pendant le défilement. */
+/* Lien suivi ou précédé d'une flèche (« Tout le journal → ») : la flèche
+   avance un peu au survol. */
+.lien-fleche { font-weight: 600; }
+.lien-fleche span {
+  display: inline-block;
+  transition: transform .35s var(--ease);
+}
+.lien-fleche:hover span { transform: translateX(4px); }
+.retour .lien-fleche:hover span { transform: translateX(-4px); }
+
+/* 5. EN-TÊTE -----------------------------------------------------------------
+   Même barre que le portfolio : monogramme cerclé, nom du site, puis le
+   menu. Elle reste collée en haut pendant le défilement. */
 .entete {
   position: sticky;
-  top: .75rem;
+  top: 0;
   z-index: 10;
-  width: min(100% - 2 * var(--gouttiere), 60rem);
-  margin: .75rem auto 0;
-  padding: .4rem .5rem .4rem .6rem;
-  border-radius: 999px;
+  background: var(--entete-fond);
+  border-bottom: 1px solid var(--line-soft);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+}
+.entete-int {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: .25rem 1rem;
+  gap: 0 1.5rem;
+  width: min(100% - 2 * var(--gouttiere), var(--large));
+  min-height: var(--entete-h);
+  margin: 0 auto;
 }
 .entete-titre {
   display: inline-flex;
   align-items: center;
-  gap: .6rem;
+  gap: .7rem;
   min-height: 44px;          /* cible tactile confortable */
-  padding-right: .4rem;
-  color: var(--ink);
-  font-size: 1rem;
-  font-weight: 650;
-  letter-spacing: -.01em;
+  font-size: .98rem;
+  font-weight: 600;
+  line-height: 1.2;
   text-decoration: none;
 }
 .entete-titre:hover { color: var(--ink); }
-/* Monogramme « AB », comme sur le portfolio */
+/* Monogramme « AB » cerclé, comme sur le portfolio */
 .entete-mono {
-  display: inline-grid;
+  display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
-  background: var(--ink);
-  color: var(--bg);
-  font-size: .78rem;
-  font-weight: 700;
-  font-stretch: 85%;
-  letter-spacing: .02em;
+  flex-shrink: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding-top: .08em;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: .95rem;
+  line-height: 1;
+  transition: background-color .25s, color .25s;
 }
+.entete-titre:hover .entete-mono { background: var(--ink); color: var(--paper); }
+
 .entete nav ul {
   display: flex;
   flex-wrap: wrap;
-  gap: .15rem;
+  gap: 0 1.6rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .entete nav a {
+  position: relative;
   display: flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 .95rem;
-  border-radius: 999px;
   color: var(--ink-2);
   font-size: .95rem;
   font-weight: 500;
   text-decoration: none;
-  transition: color .3s, background-color .3s;
+  transition: color .25s;
 }
 .entete nav a:hover { color: var(--ink); }
-/* Lien de la section en cours : une pastille claire, comme l'indicateur du portfolio */
-.entete nav a[aria-current] {
-  color: var(--ink);
-  background: var(--actif);
-  box-shadow: inset 0 1px 0 var(--verre-reflet), 0 1px 2px rgba(20, 24, 29, .08);
+/* Un tronçon de câble sous le lien : il se déroule au survol, et reste
+   en place sous la section où l'on se trouve. */
+.entete nav a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 6px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--wire);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .35s var(--ease);
 }
+.entete nav a:hover::after,
+.entete nav a[aria-current]::after { transform: scaleX(1); }
+.entete nav a[aria-current] { color: var(--ink); font-weight: 600; }
 
-/* Petit écran : le menu passe sous le nom du site. Une pilule sur deux
-   lignes serait étrange, on arrondit donc moins. L'en-tête ne colle plus
-   en haut pour ne pas manger la moitié de l'écran. */
+/* Petit écran : le menu passe sous le nom du site, et l'en-tête ne colle
+   plus en haut pour ne pas manger une partie de l'écran. */
 @media (max-width: 40rem) {
-  .entete {
-    position: relative;
-    top: auto;
-    border-radius: var(--r-lg);
-    padding: .5rem;
-  }
+  .entete { position: relative; }
+  .entete-int { padding: .35rem 0 .15rem; }
   .entete nav { width: 100%; }
-  .entete nav ul { justify-content: space-between; }
-  .entete nav a { padding: 0 .8rem; }
+  .entete nav ul { gap: 0 1.4rem; }
 }
 
-/* 8. MISE EN PAGE ------------------------------------------------------------ */
+/* 6. MISE EN PAGE ------------------------------------------------------------ */
 .page {
   flex: 1;                   /* pousse le pied de page vers le bas */
-  width: min(100% - 2 * var(--gouttiere), 46rem);
+  /* Même largeur que l'en-tête et le pied de page : tout s'aligne sur le
+     même bord gauche. Le TEXTE d'un article, lui, reste dans une colonne
+     étroite (.prose, partie 10). */
+  width: min(100% - 2 * var(--gouttiere), var(--large));
   margin: 0 auto;
-  padding: clamp(2.5rem, 7vw, 4.5rem) 0 4rem;
+  padding: clamp(2.25rem, 6vw, 4.25rem) 0 clamp(3.5rem, 8vw, 6rem);
 }
 
-/* Titres de page : légèrement condensés, comme ceux du portfolio */
-.page h1 {
-  margin: 0 0 1rem;
-  font-size: clamp(2.2rem, 6vw, 3.2rem);
-  line-height: 1.05;
-  font-stretch: 80%;
-  letter-spacing: -.025em;
+.intro {
+  max-width: 38rem;
+  color: var(--ink-2);
 }
-.intro { color: var(--ink-2); }
 .intro p { margin: 0 0 1rem; }
+.intro > :last-child { margin-bottom: 0; }
+.intro strong { color: var(--ink); }
 
-.bloc-section { margin-top: 3.5rem; }
+.bloc-section { margin-top: clamp(3rem, 7vw, 4.75rem); }
 .bloc-section > h2 {
-  margin: 0 0 1.2rem;
-  font-size: 1.6rem;
-  font-stretch: 85%;
-  letter-spacing: -.02em;
+  margin: 0 0 1.4rem;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  line-height: 1;
+  letter-spacing: -.03em;
 }
 
-/* « Tout le journal → », « Tous les write-ups → » sous les derniers articles */
-.liens-sections {
+/* 7. ACCUEIL, PRISE, FIL -------------------------------------------------------
+   Le titre à gauche, la prise réseau à droite. Le câble descend de la prise,
+   tourne, et souligne le titre jusqu'à la marge : c'est la signature du
+   portfolio. La page 404 reprend ce haut de page, voyant éteint. */
+.hero-haut {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: .5rem 1.5rem;
-  margin: 1.5rem 0 0;
-  padding: 0;
-  list-style: none;
-  font-weight: 550;
+  flex-direction: column;
+  /* Petits écrans : le câble longe le bord droit, le titre lui laisse la place */
+  padding-right: calc(var(--prise-l) + .85rem);
+}
+.hero h1 {
+  margin: .8rem 0 0 -.03em;
+  font-weight: 420;
+  font-size: clamp(2.6rem, 11vw, 6.2rem);
+  line-height: .92;
+  letter-spacing: -.045em;
 }
 
-/* Pagination : « ← Plus récents · Page 2 sur 3 · Plus anciens → » */
-.pagination {
+/* La prise et son état : au-dessus du titre sur petit écran
+   (texte à gauche, prise à droite). */
+.etat {
+  order: -1;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: .75rem 1.25rem;
-  margin-top: 2.5rem;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin: 0 calc((var(--prise-l) + .85rem) * -1) 1.1rem 0;
 }
-.pagination a {
+.etat-texte { padding-top: .2rem; }
+.etat-titre {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.etat-detail {
+  margin: .3rem 0 0;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.4;
+}
+
+/* Le dessin de la prise (layouts/_partials/prise.html). Ses couleurs
+   passent par les variables : il suit donc le mode clair ou sombre. */
+.prise {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: var(--prise-l);
+  height: auto;
+  flex-shrink: 0;
+  overflow: visible;
+  --voyant: var(--led);
+}
+.prise-boitier { fill: var(--sheet); stroke: var(--ink); stroke-width: 1.6; }
+.prise-trou { fill: var(--ink); opacity: .14; }
+.prise-voyant-eteint { fill: transparent; stroke: var(--ink); stroke-width: 1.2; stroke-opacity: .45; }
+.prise-voyant { fill: var(--voyant); }
+.prise-fiche { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
+.prise-contacts { fill: none; stroke: var(--contacts); stroke-width: 1.1; stroke-linecap: round; }
+.prise-languette { fill: none; stroke: var(--ink); stroke-width: 1.2; opacity: .55; }
+.prise-manchon { fill: var(--wire); stroke: var(--ink); stroke-width: 1.5; stroke-linejoin: round; }
+.prise-stries { fill: none; stroke: var(--ink); stroke-width: 1.1; stroke-linecap: round; opacity: .4; }
+
+/* Le fil : deux bords d'une boîte (droite et bas) et un coin arrondi font un
+   câble en « L ». Il part sous la prise, descend, tourne et file vers la gauche. */
+.fil {
+  position: absolute;
+  z-index: 0;
+  /* 85 % de la hauteur de la prise : le câble sort de son manchon, sans trou */
+  top: calc(var(--prise-l) * 1.85);
+  /* Centré sous la prise : (largeur de la prise − épaisseur du câble) ÷ 2 */
+  right: calc((var(--prise-l) - 5px) / 2);
+  bottom: -1.5rem;
+  left: -.35rem;
+  border: solid var(--wire);
+  border-width: 0 5px 5px 0;
+  border-bottom-right-radius: 30px;
+  filter: drop-shadow(1.5px 3px 0 var(--ombre-fil));
+  pointer-events: none;
+}
+/* Le bout du fil : un point et son halo, posés sur l'extrémité gauche */
+.fil-bout,
+.fil-bout::after {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--wire);
+}
+.fil-bout {
+  left: -6px;
+  bottom: -9px;
+  width: 13px;
+  height: 13px;
+  box-shadow: 0 0 0 2.5px var(--paper);
+}
+.fil-bout::after {
+  content: '';
+  inset: -6px;
+  opacity: .2;
+}
+
+.hero .intro { margin-top: clamp(3rem, 7vw, 4.25rem); }
+
+/* Page 404 : le lien est coupé. Voyant éteint, et le bout du fil ne
+   « respire » plus. */
+.hero-coupe .prise-voyant {
+  fill: transparent;
+  stroke: var(--ink);
+  stroke-width: 1.2;
+  stroke-opacity: .45;
+}
+.hero-coupe .etat { justify-content: flex-start; }
+
+/* Grand écran : la prise passe à droite du titre */
+@media (min-width: 54rem) {
+  .hero-haut {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--etat-l);
+    grid-template-areas:
+      "sur etat"
+      "titre etat";
+    column-gap: 2rem;
+    padding-right: 0;
+  }
+  .hero .surtitre { grid-area: sur; }
+  .hero h1 { grid-area: titre; }
+  .etat {
+    grid-area: etat;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  /* Le câble reste centré sous la prise, maintenant au début de la colonne de droite */
+  .fil {
+    right: calc(var(--etat-l) - (var(--prise-l) + 5px) / 2);
+    left: -.75rem;
+    bottom: -1.9rem;
+    border-bottom-right-radius: 38px;
+  }
+}
+
+/* 8. HAUTS DE PAGE -------------------------------------------------------------
+   Sur toutes les autres pages : une ligne d'information en mono, le titre
+   en grand, puis un tronçon de câble qui souligne le tout. */
+.tete {
+  position: relative;
+  margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+  padding-bottom: clamp(1.4rem, 3vw, 1.9rem);
+}
+.tete h1 {
+  margin: .7rem 0 0 -.02em;
+  font-weight: 420;
+  font-size: clamp(2.5rem, 9vw, 5rem);
+  line-height: .95;
+  letter-spacing: -.04em;
+}
+/* Le câble, et son bout à gauche (comme sous le titre de l'accueil) */
+.tete::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 5px;
+  border-radius: 0 3px 3px 0;
+  background: var(--wire);
+  filter: drop-shadow(1.5px 3px 0 var(--ombre-fil));
+}
+.tete::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  left: -4px;
+  bottom: -4px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--wire);
+  box-shadow: 0 0 0 2.5px var(--paper);
+}
+.retour { margin: 2rem 0 0; }
+.retour a {
   display: inline-flex;
   align-items: center;
-  gap: .4rem;
-  min-height: 44px;          /* cible tactile confortable */
-  padding: 0 1.1rem;
-  border: 1px solid var(--line-2);
-  border-radius: 999px;
-  font-weight: 550;
-  text-decoration: none;
-  transition: background-color .3s, border-color .3s;
-}
-.pagination a:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent-line);
-}
-.pagination-position {
-  margin: 0;
-  color: var(--ink-3);
-  font-size: .92rem;
-  font-variant-numeric: tabular-nums;
+  gap: .35em;
+  min-height: 44px;
 }
 
-/* 9. CARTES -------------------------------------------------------------------
-   Un article dans une liste. Toute la carte est cliquable grâce au lien du
-   titre, étendu sur toute la carte par un ::after invisible (pas besoin
-   de JavaScript, et un seul lien pour les lecteurs d'écran). */
+/* 9. LISTES D'ARTICLES -----------------------------------------------------------
+   Les articles sont branchés l'un sous l'autre sur un même câble, du plus
+   récent au plus ancien : le fil du journal. Toute l'entrée est cliquable
+   grâce au lien du titre, étendu par un ::after invisible (pas besoin de
+   JavaScript, et un seul lien pour les lecteurs d'écran). */
 .liste-articles {
-  display: grid;
-  gap: 1.1rem;
   margin: 0;
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--ink);
 }
 .carte {
-  padding: 1.4rem 1.6rem 1.5rem;
-  border-radius: var(--r-lg);
-  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+  --noeud: 1.95rem;          /* hauteur du point de branchement dans l'entrée */
+  position: relative;
+  padding: 1.45rem 0 1.6rem 2.6rem;
+  border-bottom: 1px solid var(--line);
 }
-/* Titre de carte : <h2> ou <h3> selon la page (voir liste-articles.html).
+/* Le câble : un trait vertical qui traverse chaque entrée. Il commence au
+   point de la première et s'arrête à celui de la dernière. */
+.carte::before {
+  content: '';
+  position: absolute;
+  left: .5rem;
+  top: 0;
+  bottom: -1px;
+  width: 3px;
+  background: var(--wire);
+}
+.carte:first-child::before { top: var(--noeud); }
+.carte:last-child::before { bottom: auto; height: var(--noeud); }
+.carte:only-child::before { display: none; }
+/* Le point de branchement : un anneau d'encre, qui se remplit au survol */
+.carte::after {
+  content: '';
+  position: absolute;
+  left: calc(.5rem + 1.5px - 7px);
+  top: calc(var(--noeud) - 7px);
+  width: 14px;
+  height: 14px;
+  border: 2.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  transition: background-color .25s, border-color .25s, transform .35s var(--ease);
+}
+/* Titre de l'entrée : <h2> ou <h3> selon la page (voir liste-articles.html).
    :is(h2, h3) = « h2 ou h3 », une seule règle pour les deux. */
 .carte :is(h2, h3) {
-  margin: 0 0 .3rem;
-  font-size: 1.3rem;
-  font-stretch: 88%;
-  letter-spacing: -.015em;
+  margin: 0;
+  font-size: clamp(1.5rem, 3.2vw, 1.95rem);
+  line-height: 1.08;
+  letter-spacing: -.025em;
 }
 .carte :is(h2, h3) a {
-  color: var(--ink);
   text-decoration: none;
+  transition: color .25s;
 }
 .carte :is(h2, h3) a::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
-  border-radius: inherit;
 }
-/* Ligne d'informations (type · date · temps de lecture) */
+/* Ligne d'informations (type · date · temps de lecture), en mono */
 .carte-infos {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin: .2rem 0 0;
+  margin: .55rem 0 0;
   color: var(--ink-3);
-  font-size: .88rem;
-  font-variant-numeric: tabular-nums;
+  font-family: var(--mono);
+  font-size: .8rem;
+  line-height: 1.5;
 }
 /* Un point « · » entre deux éléments, ajouté par le CSS (pas dans le HTML) */
 .carte-infos > * + *::before {
@@ -496,65 +671,125 @@ body::before {
   color: var(--ink-3);
 }
 /* Type de l'article (Journal / Write-up) sur les listes mélangées */
-.carte-type {
-  color: var(--accent);
-  font-weight: 650;
-}
-
-/* Cartes des autres sites (page À propos), placées dans un article :
-   on annule la mise en forme des listes et titres du texte (.prose). */
-.prose .liste-sites { padding: 0; }
-.prose .liste-sites li { margin: 0; }
-.prose .liste-sites h3 { margin: 0 0 .1rem; font-size: 1.25rem; }
-.prose .liste-sites .resume { margin-top: .4rem; }
+.carte-type { color: var(--wire-texte); }
 .carte .resume {
-  margin: .55rem 0 0;
+  max-width: 62ch;
+  margin: .7rem 0 0;
   color: var(--ink-2);
   font-size: 1rem;
   line-height: 1.6;
 }
-/* Survol (souris seulement) : la carte se soulève légèrement */
-@media (hover: hover) {
-  .carte:hover {
-    transform: translateY(-3px);
-    box-shadow: inset 0 1px 0 var(--verre-reflet), var(--ombre-survol);
+
+/* Grand écran : le titre et le résumé à gauche, les informations à droite,
+   l'une sous l'autre, comme une petite fiche. « dense » laisse le résumé
+   remonter dans la colonne de gauche, sous le titre. */
+@media (min-width: 54rem) {
+  .page-large .carte article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 13.5rem;
+    grid-auto-flow: row dense;
+    column-gap: 3rem;
+    align-items: start;
   }
-  .carte:hover :is(h2, h3) a { color: var(--accent); }
+  .page-large .carte article > :is(h2, h3),
+  .page-large .carte .resume { grid-column: 1; }
+  .page-large .carte-infos {
+    grid-column: 2;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .1rem;
+    margin-top: .3rem;
+  }
+  .page-large .carte-infos + .carte-infos { margin-top: .35rem; }
+  .page-large .carte-infos > * + *::before { content: none; }
 }
-/* Au clavier : le focus du lien entoure toute la carte */
+
+/* Survol (souris seulement) : le point se remplit, le titre prend l'orange */
+@media (hover: hover) {
+  .carte:hover::after {
+    background: var(--wire);
+    border-color: var(--wire);
+    transform: scale(1.15);
+  }
+  .carte:hover :is(h2, h3) a { color: var(--wire-texte); }
+}
+/* Au clavier : le focus du lien entoure toute l'entrée */
 .carte :is(h2, h3) a:focus-visible { outline: none; }
 .carte:has(:is(h2, h3) a:focus-visible) {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--wire-texte);
   outline-offset: 3px;
+  border-radius: 4px;
+}
+.carte:has(:is(h2, h3) a:focus-visible)::after {
+  background: var(--wire);
+  border-color: var(--wire);
+}
+/* Navigateur sans :has() : on garde le contour autour du titre */
+@supports not selector(:has(*)) {
+  .carte :is(h2, h3) a:focus-visible { outline: 2px solid var(--wire-texte); }
 }
 .vide { color: var(--ink-3); font-style: italic; }
 
-/* Bloc de liens de la page 404 : du verre comme les cartes, mais sans
-   l'effet de survol (il contient plusieurs liens, pas un seul). */
+/* Cartes des autres sites (page À propos), placées dans un article : ce ne
+   sont pas des entrées du journal, donc pas de câble. Des feuilles posées
+   sur le papier, et on annule la mise en forme des listes et titres du
+   texte (.prose). */
+.prose .liste-sites {
+  display: grid;
+  gap: .9rem;
+  padding: 0;
+  border-top: 0;
+}
+.prose .liste-sites .carte {
+  margin: 0;
+  padding: 1.15rem 1.35rem 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--sheet);
+  transition: border-color .25s;
+}
+.prose .liste-sites .carte::before,
+.prose .liste-sites .carte::after { content: none; }
+.prose .liste-sites h3 { margin: 0; font-size: 1.45rem; }
+.prose .liste-sites h3 a::after { border-radius: var(--r-md); }
+.prose .liste-sites .carte-infos { margin-top: .3rem; }
+.prose .liste-sites .resume { margin-top: .5rem; }
+.prose .liste-sites .carte:has(h3 a:focus-visible) { border-radius: var(--r-md); }
+@media (hover: hover) {
+  .prose .liste-sites .carte:hover { border-color: var(--ink); }
+}
+
+/* Bloc de liens de la page 404 : une feuille, sans effet de survol (il
+   contient plusieurs liens, pas un seul). */
 .bloc-404 {
-  margin-top: 2rem;
-  padding: 1.4rem 1.6rem 1.5rem;
-  border-radius: var(--r-lg);
+  max-width: 38rem;
+  margin-top: clamp(2.5rem, 6vw, 3.5rem);
+  padding: 1.3rem 1.5rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--sheet);
 }
 .bloc-404 h2 {
-  margin: 0 0 .6rem;
-  font-size: 1.25rem;
-  font-stretch: 88%;
-  letter-spacing: -.015em;
+  margin: 0 0 .5rem;
+  font-size: 1.6rem;
 }
 .bloc-404 ul { margin: 0; padding-left: 1.2rem; }
-.bloc-404 li { margin: .35rem 0; }
-.bloc-404 li::marker { color: var(--accent); }
+.bloc-404 li a { display: inline-block; padding: .3rem 0; }
+.bloc-404 li::marker { color: var(--wire); }
 
 /* 10. ARTICLE (LECTURE) -------------------------------------------------------
-   Le cœur du blog. Pas de verre ici : du texte net sur un fond calme.
-   Largeur limitée à ~70 caractères pour que l'œil retrouve facilement
-   le début de la ligne suivante. */
-.article-entete { margin-bottom: 2.5rem; }
+   Le cœur du blog : du texte net sur un fond calme. Largeur limitée à
+   ~70 caractères pour que l'œil retrouve facilement le début de la ligne
+   suivante. */
+.article-entete h1 {
+  /* Un titre d'article est une phrase : plus petit que le nom d'une section */
+  font-size: clamp(2.2rem, 6.5vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -.035em;
+}
 
 .prose {
   max-width: var(--mesure);
-  color: var(--ink);
   overflow-wrap: break-word; /* une très longue URL ne déborde pas */
 }
 /* Espacement vertical régulier entre les blocs */
@@ -564,57 +799,64 @@ body::before {
 .prose h2,
 .prose h3,
 .prose h4 {
-  margin-top: 2.2em;
-  margin-bottom: .6em;
-  letter-spacing: -.015em;
+  margin-top: 2.1em;
+  margin-bottom: .55em;
 }
-.prose h2 { font-size: 1.65rem; font-stretch: 85%; }
-.prose h3 { font-size: 1.3rem; font-stretch: 90%; }
-.prose h4 { font-size: 1.1rem; }
+.prose h2 { font-size: clamp(1.75rem, 4.5vw, 2.15rem); letter-spacing: -.03em; }
+.prose h3 { font-size: 1.5rem; }
+.prose h4 { font-size: 1.2rem; font-style: italic; }
 /* Un titre qui suit directement un autre titre n'a pas besoin d'autant d'espace */
 .prose :is(h2, h3, h4) + :is(h2, h3, h4) { margin-top: 1em; }
 
-.prose a { text-decoration-thickness: .08em; }
 .prose a:hover { text-decoration-thickness: .14em; }
 
 .prose ul,
 .prose ol { padding-left: 1.4em; }
 .prose li { margin-bottom: .35em; }
-.prose li::marker { color: var(--accent); }
+.prose li::marker { color: var(--wire-texte); }
 
+/* Citation : en serif italique, le long d'un tronçon de câble */
 .prose blockquote {
   margin-left: 0;
   margin-right: 0;
-  padding: .2em 0 .2em 1.2em;
-  border-left: 3px solid var(--accent-line);
+  padding: .1em 0 .1em 1.2em;
+  border-left: 3px solid var(--wire);
   color: var(--ink-2);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.15em;
+  line-height: 1.5;
 }
 .prose blockquote > :last-child { margin-bottom: 0; }
 
 .prose hr {
   margin: 3em 0;
   border: 0;
-  border-top: 1px solid var(--line-2);
+  border-top: 1px solid var(--line);
 }
 
-.prose img { border-radius: var(--r-sm); }
+.prose img {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+}
 
 /* Image avec légende (layouts/_markup/render-image.html) */
 .prose figure { margin: 2em 0; }
 .prose figcaption {
   margin-top: .6rem;
   color: var(--ink-3);
-  font-size: .9rem;
+  font-family: var(--mono);
+  font-size: .8rem;
   line-height: 1.5;
-  text-align: center;
 }
 
 /* Tableaux : enveloppés par layouts/_markup/render-table.html dans un bloc
    qui défile horizontalement si le tableau est trop large. */
 .tableau {
   overflow-x: auto;
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--line);
   border-radius: var(--r-sm);
+  background: var(--sheet);
 }
 .tableau table {
   width: 100%;
@@ -624,11 +866,19 @@ body::before {
 }
 .tableau th,
 .tableau td {
-  padding: .6em .9em;
+  padding: .65em .95em;
   text-align: left;
-  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-soft);
 }
-.tableau th { font-weight: 650; background: var(--accent-soft); }
+/* En-têtes de colonnes : petites, en mono, sur un filet à l'encre */
+.tableau th {
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: .8rem;
+  font-weight: 400;
+  border-bottom: 1px solid var(--ink);
+}
 .tableau tr:last-child td { border-bottom: 0; }
 /* Alignement des colonnes (:---:, ---:) : par classes, car la CSP
    interdit les styles en ligne qu'Hugo utiliserait par défaut. */
@@ -651,10 +901,13 @@ pre {
   font-family: var(--mono);
   font-size: .875em;
 }
+/* IBM Plex Mono n'est fournie qu'en graisse normale : on interdit au
+   navigateur de fabriquer un faux gras ou un faux italique, baveux. */
+pre { font-synthesis: none; }
 /* Code dans une phrase */
 :not(pre) > code {
   padding: .12em .38em;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--code-bg);
   font-size: .85em;
 }
@@ -669,7 +922,7 @@ pre {
   overflow-x: auto;          /* les lignes longues défilent au lieu de déborder */
   background: var(--code-bg);
   border: 1px solid var(--line);
-  line-height: 1.55;
+  line-height: 1.6;
   tab-size: 2;
 }
 .prose pre code { font-size: 1em; }
@@ -687,13 +940,15 @@ pre {
   display: flex;
   flex-wrap: wrap;
   gap: .3rem .6rem;
-  margin: 0 0 1rem;
+  margin: 1.4rem 0 0;
   padding: 0;
   list-style: none;
   color: var(--ink-3);
-  font-size: .92rem;
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.6;
 }
-.meta strong { color: var(--ink-2); font-weight: 600; }
+.meta strong { color: var(--ink-2); font-weight: 400; }
 /* Petit point entre deux informations (date · temps de lecture) */
 .meta li + li::before {
   content: '·';
@@ -709,10 +964,10 @@ pre {
   padding: 0 .6rem;
   border-radius: 999px;
   border: 1px solid currentColor;
-  background: color-mix(in srgb, currentColor 12%, transparent);
-  font-weight: 650;
-  font-size: .85rem;
-  line-height: 1.6;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  font-family: var(--mono);
+  font-size: .78rem;
+  line-height: 1.7;
 }
 .difficulte-facile { color: var(--facile); }
 .difficulte-moyen { color: var(--moyen); }
@@ -726,158 +981,371 @@ pre {
   padding: 0;
   list-style: none;
 }
+.meta + .tags { margin-top: .9rem; }
 .tags a {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
   padding: 0 .8rem;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-line);
-  color: var(--accent);
-  font-size: .85rem;
-  font-weight: 550;
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: .8rem;
   text-decoration: none;
-  transition: background-color .3s;
+  transition: border-color .25s, background-color .25s, color .25s;
 }
-.tags a:hover { background: var(--surface); }
-.tags .nombre { margin-left: .35em; color: var(--ink-3); }
+.tags a:hover {
+  border-color: var(--ink);
+  background: var(--sheet);
+  color: var(--ink);
+}
+.tags .nombre { margin-left: .5em; color: var(--ink-3); }
+/* Page /tags/ : un peu plus d'air, et des pastilles plus faciles à viser */
+.tags-tous { gap: .6rem; }
+.tags-tous a { min-height: 40px; padding: 0 1rem; font-size: .86rem; }
 
 /* 13. SOMMAIRE ------------------------------------------------------------------
    Liste des titres de l'article, générée par Hugo (<nav id="TableOfContents">)
-   et placée dans un <details> : repliable d'un clic, sans JavaScript.
-   Pas de verre : il fait partie de la lecture. */
+   et placée dans un <details> : repliable d'un clic, sans JavaScript. */
 .sommaire {
   max-width: var(--mesure);
   margin-bottom: 2.5rem;
-  padding: .9rem 1.3rem;
-  border: 1px solid var(--line-2);
+  padding: .95rem 1.3rem 1rem;
+  border: 1px solid var(--line);
   border-radius: var(--r-md);
-  font-size: .98rem;
-  line-height: 1.5;
+  background: var(--sheet);
+  font-size: .96rem;
+  line-height: 1.45;
 }
 .sommaire summary {
   cursor: pointer;
-  font-weight: 650;
-  color: var(--ink);
+  color: var(--ink-2);
+  font-family: var(--mono);
+  font-size: .82rem;
+  line-height: 1.9;        /* zone de clic d'au moins 24 px de haut */
 }
-.sommaire summary:hover { color: var(--accent); }
+.sommaire summary:hover { color: var(--wire-texte); }
 .sommaire ul {
   margin: 0;
-  padding-left: 1.1rem;
+  padding-left: 1rem;
   list-style: none;
 }
 /* Premier niveau collé à gauche ; le second (###) reste indenté */
-.sommaire #TableOfContents > ul { padding-left: 0; margin-top: .7rem; }
-.sommaire li { margin: .35rem 0; }
+.sommaire #TableOfContents > ul { padding-left: 0; margin-top: .55rem; }
+.sommaire li { margin: 0; }
 .sommaire a {
+  display: block;
+  padding: .28rem 0;
   color: var(--ink-2);
   text-decoration: none;
 }
 .sommaire a:hover {
-  color: var(--accent);
+  color: var(--wire-texte);
   text-decoration: underline;
+}
+
+/* Grand écran : le sommaire se place à droite du texte et reste visible
+   pendant qu'on lit. Seulement si le navigateur comprend :has() (la grille
+   ne doit exister QUE si l'article a un sommaire) ; sinon, le sommaire
+   reste au-dessus du texte, comme sur petit écran. */
+@media (min-width: 72rem) {
+  .article:has(.sommaire) {
+    display: grid;
+    grid-template-columns: minmax(0, var(--colonne)) minmax(0, 1fr);
+    column-gap: 3.5rem;
+    align-items: start;
+  }
+  .article:has(.sommaire) > .tete { grid-column: 1 / -1; }
+  .article:has(.sommaire) > .prose { grid-column: 1; grid-row: 2; }
+  .article:has(.sommaire) > .sommaire {
+    grid-column: 2;
+    grid-row: 2;
+    position: sticky;
+    top: calc(var(--entete-h) + 1.5rem);
+    max-height: calc(100vh - var(--entete-h) - 3rem);
+    margin: 0;
+    overflow-y: auto;
+    /* Plus de cadre : un simple filet à gauche, le texte reste le sujet */
+    padding: 0 0 0 1.3rem;
+    border: 0;
+    border-left: 1px solid var(--line);
+    border-radius: 0;
+    background: none;
+    font-size: .9rem;
+  }
 }
 
 /* 14. ENCADRÉS « LEÇON » ET « ATTENTION » --------------------------------------------
    Produits par les shortcodes {{< lecon >}} et {{< attention >}}.
-   Chaque type ne fait que choisir sa couleur (--teinte) ; le reste est commun. */
+   Deux feuilles posées sur le papier, qu'on distingue sans la couleur :
+   - Leçon : un tronçon de câble sur le bord gauche, titre en serif italique ;
+   - Attention : cerclée d'un trait à l'encre, titre droit, icône triangle. */
 .encadre {
-  --teinte: var(--accent);
+  --teinte: var(--wire-texte);
   margin: 2em 0;
-  padding: 1rem 1.25rem 1.1rem;
-  border-left: 4px solid var(--teinte);
-  border-radius: 0 var(--r-sm) var(--r-sm) 0;
-  background: color-mix(in srgb, var(--teinte) 12%, transparent);
+  padding: 1rem 1.3rem 1.15rem;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--wire);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  background: var(--sheet);
 }
-.encadre-attention { --teinte: var(--attention); }
+.encadre-attention {
+  --teinte: var(--attention);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-md);
+}
 .encadre-titre {
   display: flex;
   align-items: center;
   gap: .5rem;
   margin: 0 0 .4rem;
   color: var(--teinte);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+.encadre-attention .encadre-titre {
+  font-family: var(--sans);
+  font-style: normal;
+  font-size: 1rem;
   font-weight: 650;
 }
 .encadre-titre svg { flex-shrink: 0; }
 .encadre-contenu { color: var(--ink-2); }
+.encadre-contenu strong { color: var(--ink); }
 .encadre-contenu > * { margin: 0 0 .8em; }
 .encadre-contenu > :last-child { margin-bottom: 0; }
 
-/* 15. PIED DE PAGE ------------------------------------------------------------- */
-.pied {
-  padding: 2rem var(--gouttiere) 2.5rem;
-  border-top: 1px solid var(--line);
+/* 15. PAGINATION ET LIENS DE BAS DE LISTE ------------------------------------------ */
+/* « Tout le journal → », « Tous les write-ups → » sous les derniers articles */
+.liens-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 2rem;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.liens-sections a {
+  display: inline-flex;
+  align-items: center;
+  gap: .35em;
+  min-height: 44px;
+}
+
+/* Pagination : « ← Plus récents · Page 2 sur 3 · Plus anciens → » */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem 1.25rem;
+  margin-top: 2.5rem;
+}
+.pagination a {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  min-height: 44px;          /* cible tactile confortable */
+  padding: 0 1.15rem;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-size: .95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color .25s, color .25s;
+}
+.pagination a:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.pagination-position {
+  margin: 0;
   color: var(--ink-3);
-  font-size: .88rem;
-  text-align: center;
+  font-family: var(--mono);
+  font-size: .82rem;
+}
+
+/* 16. PIED DE PAGE ------------------------------------------------------------- */
+.pied {
+  width: min(100% - 2 * var(--gouttiere), var(--large));
+  margin: 0 auto;
+  padding: 1.5rem 0 2.5rem;
+  border-top: 1px solid var(--ink);
+  color: var(--ink-3);
+  font-family: var(--mono);
+  font-size: .8rem;
+  line-height: 1.5;
 }
 /* Les éléments sur une ligne, séparés par un « · » (comme .carte-infos) */
 .pied-liens {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: .3rem 0;
   margin: 0;
   padding: 0;
   list-style: none;
 }
-.pied-liens > li + li::before {
+/* Au moins 24 px de haut pour chaque lien (cible tactile minimale) */
+.pied a { display: inline-block; padding: .4rem 0; }
+/* Le « · » est placé APRÈS chaque élément (sauf le dernier) : quand la
+   liste passe à la ligne, aucune ligne ne commence par un point. */
+.pied-liens > li:not(:last-child)::after {
   content: '·';
-  margin: 0 .6rem;
+  margin: 0 .7rem;
 }
 .pied a { color: var(--ink-2); }
-.pied a:hover { color: var(--ink); }
+.pied a:hover { color: var(--wire-texte); }
 
-/* 16. PRÉFÉRENCES D'ACCESSIBILITÉ ----------------------------------------------- */
+/* 17. FIL DE LECTURE ------------------------------------------------------------
+   Sur un article : un câble orange tout en haut de l'écran, qui s'allonge
+   à mesure qu'on avance dans la lecture. Sans JavaScript : c'est le
+   défilement de la page qui pilote l'animation (animation-timeline).
+   Affiché seulement si le navigateur sait le faire et si la personne n'a
+   pas demandé à réduire les animations ; sinon il reste caché, et rien
+   ne manque (la barre de défilement donne la même information). */
+.fil-lecture { display: none; }
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .fil-lecture {
+      display: block;
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--wire);
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      pointer-events: none;
+      animation: lecture linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@keyframes lecture {
+  to { transform: scaleX(1); }
+}
+
+/* 18. APPARITIONS -------------------------------------------------------------
+   Discrètes et courtes, jouées une seule fois à l'ouverture de la page. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Accueil : le titre arrive, puis le câble se déroule depuis la prise */
+  .hero .surtitre,
+  .hero h1,
+  .hero .etat,
+  .hero .intro {
+    animation: apparait .8s var(--ease) both;
+  }
+  .hero h1 { animation-delay: .06s; }
+  .hero .intro { animation-delay: .35s; }
+
+  /* clip-path dévoile le câble dans l'ordre du tracé : d'abord la descente,
+     puis le virage vers la gauche */
+  .fil { animation: deroule 1.5s .3s cubic-bezier(.6, 0, .25, 1) both; }
+  .fil-bout { animation: pose .5s 1.7s cubic-bezier(.34, 1.56, .64, 1) both; }
+  /* Le halo du bout « respire » doucement, comme le voyant de la prise */
+  .fil-bout::after { animation: halo 2.2s ease-in-out infinite; }
+  .prise { animation: voyant 2.6s ease-in-out infinite; }
+  .hero-coupe .fil-bout::after,
+  .hero-coupe .prise { animation: none; }
+
+  /* Autres pages : le câble sous le titre se déroule de droite à gauche */
+  .tete::after {
+    transform-origin: 100% 50%;
+    animation: tire .9s .1s cubic-bezier(.6, 0, .25, 1) both;
+  }
+  .tete::before { animation: pose .5s .9s cubic-bezier(.34, 1.56, .64, 1) both; }
+}
+
+/* La couleur du voyant est déclarée pour pouvoir être animée */
+@property --voyant {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #128A49;
+}
+@keyframes voyant {
+  0%, 100% { --voyant: var(--led); }
+  50% { --voyant: var(--led-vif); }
+}
+@keyframes halo {
+  0%, 100% { transform: scale(.7); opacity: .26; }
+  50% { transform: scale(1.15); opacity: .1; }
+}
+@keyframes apparait {
+  from { opacity: 0; transform: translateY(14px); }
+}
+@keyframes deroule {
+  0% { clip-path: inset(-24px -24px 100% calc(100% - 40px)); }
+  45% { clip-path: inset(-24px -24px -24px calc(100% - 40px)); }
+  100% { clip-path: inset(-24px -24px -24px -24px); }
+}
+@keyframes tire {
+  from { transform: scaleX(0); }
+}
+@keyframes pose {
+  from { transform: scale(0); }
+}
+
+/* 19. PRÉFÉRENCES D'ACCESSIBILITÉ ----------------------------------------------- */
 /* Animations réduites (réglage du système) : plus aucun mouvement */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition-duration: .001ms !important;
     animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
   }
-  .carte:hover { transform: none; }
+  .lien-fleche:hover span,
+  .carte:hover::after { transform: none; }
 }
-/* Transparence réduite : surfaces pleines, sans flou ni halos */
+/* Transparence réduite : l'en-tête devient une surface pleine, sans flou */
 @media (prefers-reduced-transparency: reduce) {
-  .verre {
-    background: var(--surface);
+  .entete {
+    background: var(--paper);
     -webkit-backdrop-filter: none;
             backdrop-filter: none;
   }
-  .verre::before,
-  .verre::after,
-  body::before { display: none; }
+}
+/* Contraste renforcé : les filets discrets passent à l'encre */
+@media (prefers-contrast: more) {
+  :root {
+    --line: var(--ink);
+    --line-soft: var(--ink-3);
+    --ink-3: var(--ink-2);
+  }
 }
 /* Contraste élevé de Windows : le système impose ses couleurs, on garde
    juste des bordures visibles et on retire les décors. */
 @media (forced-colors: active) {
-  .verre, .tableau, .tags a, .sommaire { border: 1px solid CanvasText; }
-  .encadre { border: 1px solid CanvasText; border-left-width: 4px; }
-  .verre::before, .verre::after, body::before { display: none; }
+  body { background-image: none; }
+  .tableau, .tags a, .sommaire, .bloc-404, .prose .liste-sites .carte { border: 1px solid CanvasText; }
+  .encadre { border: 1px solid CanvasText; border-left-width: 5px; }
+  .fil { border-color: CanvasText; }
+  .fil-bout, .fil-bout::after, .tete::before, .tete::after, .carte::before,
+  .entete nav a::after, .fil-lecture { background: CanvasText; }
+  .carte::after { border-color: CanvasText; background: Canvas; }
 }
 
-/* 17. IMPRESSION --------------------------------------------------------------- */
+/* 20. IMPRESSION --------------------------------------------------------------- */
 @media print {
   body { background: #fff; color: #000; font-size: 11pt; }
-  body::before, .entete, .evitement, .pied, .pagination { display: none; }
-  .verre {
-    background: #fff;
-    box-shadow: none;
-    border: 1px solid #ccc;
-    -webkit-backdrop-filter: none;
-            backdrop-filter: none;
-  }
-  .verre::before, .verre::after { display: none; }
+  .entete, .evitement, .pied, .pagination, .fil-lecture, .fil, .etat, .sommaire { display: none; }
   .page { width: auto; padding: 0; }
+  .hero-haut { display: block; padding-right: 0; }
+  .tete::before, .tete::after, .carte::before, .carte::after { display: none; }
+  .tete { padding-bottom: 0; border-bottom: 1.5pt solid #000; }
+  .carte { padding-left: 0; }
+  .article { display: block; }
   .prose { max-width: none; }
-  .prose a { color: #000; }
+  .prose a { color: #000; text-decoration-color: #000; }
   /* Sur papier, on ne peut pas cliquer : on écrit l'adresse après le lien */
   .prose a[href^="http"]::after { content: " (" attr(href) ")"; font-size: .85em; color: #555; }
   .prose pre { white-space: pre-wrap; border-color: #ccc; }
   .prose pre, .prose blockquote, .tableau, .prose img, .encadre { break-inside: avoid; }
   /* À l'impression, le code est imprimé sans fond : on garde un cadre */
   .chroma, .prose .bg { background: none; }
-  .sommaire { display: none; }
+  .encadre, .tableau, .bloc-404, .prose .liste-sites .carte { background: none; border-color: #999; }
   .prose :is(h2, h3, h4) { break-after: avoid; }
 }

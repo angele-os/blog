@@ -6,15 +6,26 @@
   ce que RelPermalink fournit.
 */}}
 {{ define "main" }}
-<h1>Page introuvable</h1>
-<div class="intro">
-  <p>Cette page n'existe pas, ou plus. L'adresse contient peut-être une faute
-  de frappe, ou l'article a été déplacé.</p>
+{{/* Même haut de page que l'accueil, mais la prise a son voyant éteint
+     (.hero-coupe, main.css partie 7) : le lien est coupé. */}}
+<div class="hero hero-coupe">
+  <div class="hero-haut">
+    <p class="surtitre">Erreur 404</p>
+    <h1>Page introuvable</h1>
+    <div class="etat">
+      {{ partial "prise.html" . }}
+    </div>
+    <div class="fil" aria-hidden="true"><span class="fil-bout"></span></div>
+  </div>
+  <div class="intro">
+    <p>Cette page n'existe pas, ou plus. L'adresse contient peut-être une faute
+    de frappe, ou l'article a été déplacé.</p>
+  </div>
 </div>
 
-{{/* Bloc de verre (comme les cartes), mais pas une carte cliquable :
-     il contient plusieurs liens, d'où sa propre classe .bloc-404. */}}
-<nav class="verre bloc-404" aria-labelledby="titre-404">
+{{/* Pas une carte cliquable : le bloc contient plusieurs liens, d'où sa
+     propre classe .bloc-404. */}}
+<nav class="bloc-404" aria-labelledby="titre-404">
   <h2 id="titre-404">Où aller ?</h2>
   <ul>
     <li><a href="{{ site.Home.RelPermalink }}">L'accueil et les derniers articles</a></li>

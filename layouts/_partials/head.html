@@ -7,10 +7,10 @@
 
 {{/* Le site sait s'afficher en clair et en sombre : le navigateur peut
      donc choisir le bon fond dès le premier affichage. theme-color colore
-     la barre du navigateur sur mobile (fond brume ou ardoise). */}}
+     la barre du navigateur sur mobile (papier en clair, encre en sombre). */}}
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#EDF0F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1417" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ECEDE8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131517" media="(prefers-color-scheme: dark)">
 
 {{/* Politique de sécurité (CSP) : le navigateur refuse tout ce qui n'est pas
      explicitement autorisé. Valeur définie dans CLAUDE.md :
@@ -56,10 +56,12 @@
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
 {{ end }}
 
-{{/* Demande la police principale tout de suite, sans attendre que le
-     navigateur la découvre dans le CSS : le texte change moins de police
-     à l'affichage. crossorigin est obligatoire pour les polices. */}}
+{{/* Demande les deux polices principales tout de suite (le texte, puis
+     les titres), sans attendre que le navigateur les découvre dans le CSS :
+     le texte change moins de police à l'affichage. crossorigin est
+     obligatoire pour les polices. */}}
 <link rel="preload" href="{{ "fonts/instrument-sans-latin-standard-normal.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ "fonts/newsreader-latin-opsz-normal.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
 
 {{/* Icône de l'onglet (SVG : nette à toutes les tailles) et icône utilisée
      par iPhone/iPad quand on ajoute le site à l'écran d'accueil (PNG 180×180). */}}

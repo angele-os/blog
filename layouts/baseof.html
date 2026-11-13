@@ -15,8 +15,15 @@
 
   {{ partial "header.html" . }}
 
-  {{/* .page : colonne centrée de largeur limitée (voir main.css, partie 8). */}}
-  <main id="contenu" class="page">
+  {{/* Fil de lecture (articles seulement) : un câble orange en haut de
+       l'écran, qui s'allonge à mesure qu'on avance dans l'article. Fait en
+       CSS seul (main.css, partie 17) ; décoratif, donc caché aux lecteurs d'écran. */}}
+  {{ if and .IsPage .Section }}<div class="fil-lecture" aria-hidden="true"></div>{{ end }}
+
+  {{/* .page : zone centrée de largeur limitée (voir main.css, partie 6).
+       .page-large marque les pages de liste (accueil, sections, tags, 404) :
+       sur grand écran, leurs entrées s'y étalent sur deux colonnes. */}}
+  <main id="contenu" class="page{{ if not .IsPage }} page-large{{ end }}">
     {{ block "main" . }}{{ end }}
   </main>
 

@@ -72,8 +72,8 @@ content/
   a-propos.md
 layouts/               gabarits du thème maison
 assets/css/            CSS (traité par Hugo, empreinte dans le nom)
-static/fonts/          Instrument Sans (woff2, hébergée localement)
-static/img/            favicon, image de partage
+static/fonts/          Newsreader, Instrument Sans, IBM Plex Mono (woff2, hébergées localement)
+static/img/            favicon, image de partage, grain de papier
 scripts/               garde-fous (anti-fuite, EXIF)
 .github/workflows/     construction, vérifications, déploiement
 ```
@@ -92,7 +92,20 @@ difficulte: "facile"   # facile | moyen | difficile
 
 ## Identité visuelle
 
-Reprendre celle du portfolio v2 d'Ange (ange-bonkoski.fr) : couleurs
-sobres et épurées, police Instrument Sans, effet « liquid glass » léger
-réservé à l'en-tête et aux cartes. Pour un blog, la lisibilité du texte
-long passe avant les effets. Mode clair et sombre automatiques.
+Reprendre l'identité « le fil » du portfolio d'Ange (ange-bonkoski.fr),
+partagée avec net-toolkit et le simulateur BUT :
+
+- papier gris chaud `#ECEDE8`, feuilles `#FAFAF7`, encre `#15181B` ;
+- un seul accent : le câble orange `#EE4F1A` (décor uniquement ; pour du
+  TEXTE orange, utiliser `--wire-texte`, plus foncé, qui respecte le
+  contraste AA) ;
+- titres en Newsreader, texte en Instrument Sans, code et petites
+  informations (dates, tags) en IBM Plex Mono ;
+- le câble est le fil conducteur : il part de la prise réseau sur
+  l'accueil, souligne les titres, relie les articles d'une liste, et
+  s'allonge en haut de l'écran pendant la lecture d'un article.
+
+Pas d'effet « verre », pas d'ombres décoratives. Pour un blog, la
+lisibilité du texte long passe avant les effets. Mode clair et sombre
+automatiques : toutes les couleurs sont des variables en tête de
+`assets/css/main.css`, le mode sombre ne fait que changer leurs valeurs.

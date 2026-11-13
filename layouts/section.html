@@ -7,7 +7,14 @@
 */}}
 {{ define "main" }}
 {{ $pagination := .Paginate .Pages }}
-<h1>{{ .Title }}</h1>
+{{/* .tete : le haut d'une page, souligné par un tronçon de câble
+     (main.css, partie 8). Le surtitre donne le nombre d'articles. */}}
+<header class="tete">
+  {{ $nombre := len .Pages }}
+  {{/* Pas de « 0 article » : une section vide l'annonce déjà plus bas. */}}
+  {{ if $nombre }}<p class="surtitre">{{ $nombre }} article{{ if gt $nombre 1 }}s{{ end }}</p>{{ end }}
+  <h1>{{ .Title }}</h1>
+</header>
 {{/* L'introduction seulement sur la première page, pas sur les suivantes. */}}
 {{ if eq $pagination.PageNumber 1 }}
 <div class="intro">{{ .Content }}</div>
